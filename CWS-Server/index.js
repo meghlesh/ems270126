@@ -10,10 +10,7 @@ const User = require("./models/User"); // Your Mongoose User model
 const connectDB = require("./db");
 const Attendance = require("./models/AttendanceSchema")
 const path = require("path");
-const fs = require("fs");
-const setPasswordTemplate = require('./template/setPasswordTemplate');
-const rePasswordTemplate=require('./template/resetPasswordTemplate')
-const probationCompletedTemplate=require('./template/probationCompletedTemplate')
+
 
 // const cloudinary = require("cloudinary").v2;
 // const { CloudinaryStorage } = require("multer-storage-cloudinary");
@@ -28,10 +25,6 @@ const app = express();
 
 
 
-
-
-
-
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_KEY,
@@ -39,49 +32,22 @@ cloudinary.config({
 });
 
 
-// const allowedOrigins = [
-//   "https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net",  // production frontend
-//   "https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net"              // local development frontend
-// ];
-
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     if (!origin) return callback(null, true); // allow non-browser tools like Postman
-//     if (allowedOrigins.indexOf(origin) !== -1) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true, // if sending cookies
-// }));
-
-
 const allowedOrigins = [
-  "https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net",
-  "http://localhost:5173"
+  "https://app-rect-fe-cpgsaadrg5bsfjab.centralus-01.azurewebsites.net",  // production frontend
+  "http://localhost:5173"              // local development frontend
 ];
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-
-  // Important: respond to OPTIONS directly
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  next();
-});
-
-
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow non-browser tools like Postman
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // if sending cookies
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -98,39 +64,6 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // Example route (keep as before)
-// app.get("/api/ping", (req, res) => {
-//   res.json({ ok: true, time: new Date() });
-// });
 
 // Multer setup for file uploads
 // const storage = multer.diskStorage({
@@ -244,6 +177,7 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+const fs = require("fs");
 if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
 
 
@@ -256,7 +190,6 @@ app.post("/admin/add-employee", upload.fields([
   { name: "aadharCardPdf", maxCount: 1 },
   { name: "appointmentLetter", maxCount: 1 },
   { name: "passbookPdf", maxCount: 1 },
-  { name: "certificatePdf", maxCount: 1 }
 ]),
   async (req, res) => {
     try {
@@ -277,10 +210,8 @@ app.post("/admin/add-employee", upload.fields([
         currentAddress,
         permanentAddress,
         bankDetails,
-        pfNumber,
-        uanNumber
       } = req.body;
-      console.log("emp detaiols", req.body)
+
       if (!email) return res.status(400).json({ error: "Email is required" });
 
       // Fix maritalStatus capitalization
@@ -302,27 +233,6 @@ app.post("/admin/add-employee", upload.fields([
       try { permanentAddr = JSON.parse(permanentAddress); } catch { }
       try { bankDtls = JSON.parse(bankDetails); } catch { }
 
-
-      // Auto calculate probation end date
-      let probationMonths = 6;
-      let probationEndDate = null;
-
-      const dojDate = new Date(doj);
-      const endDate = new Date(dojDate);
-
-      // Fix auto-adjust overflow by resetting to 1
-      endDate.setDate(1);
-
-      // Now add probation months
-      endDate.setMonth(dojDate.getMonth() + probationMonths);
-
-      // Restore original date safely
-      const day = dojDate.getDate();
-      const lastDay = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0).getDate();
-      endDate.setDate(Math.min(day, lastDay));
-
-      probationEndDate = endDate;
-
       // Create new employee
       const newEmployee = new User({
         name,
@@ -338,10 +248,6 @@ app.post("/admin/add-employee", upload.fields([
         salaryType,
         role,
         doj,
-        pfNumber,
-        uanNumber,
-        probationMonths: 6,              // optional, already in schema
-        probationEndDate: probationEndDate,  // <-- AUTO CALCULATED
         password: "",
         // image: req.files?.image?.[0]?.filename || null,
         // panCardPdf: req.files?.panCardPdf?.[0]?.filename || null,
@@ -352,19 +258,11 @@ app.post("/admin/add-employee", upload.fields([
         panCardPdf: req.files?.panCardPdf?.[0]?.filename || null,
         aadharCardPdf: req.files?.aadharCardPdf?.[0]?.filename || null,
         appointmentLetter: req.files?.appointmentLetter?.[0]?.filename || null,
-        certificatePdf: req.files?.certificatePdf?.[0]?.filename || null,
-
         bankDetails: { ...bankDtls, passbookPdf: req.files?.passbookPdf?.[0]?.filename || null },
-
 
         currentAddress: currentAddr,
         permanentAddress: permanentAddr,
       });
-
-      console.log("DOJ received:", doj);
-      console.log("Calculated probationEndDate:", probationEndDate);
-      console.log("Saving Employee...");
-
 
       await newEmployee.save();
 
@@ -373,17 +271,16 @@ app.post("/admin/add-employee", upload.fields([
       newEmployee.verifyToken = token;
       await newEmployee.save();
 
-      const verifyLink = `https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net/employee/verify/${newEmployee._id}/${encodeURIComponent(token)}`;
+      const verifyLink = `https://app-rect-fe-cpgsaadrg5bsfjab.centralus-01.azurewebsites.net/employee/verify/${newEmployee._id}/${encodeURIComponent(token)}`;
 
 
-     const setPasswordHtml = await setPasswordTemplate(verifyLink);
       // Send email safely
       try {
         await transporter.sendMail({
           from: `"CWS EMS" <${process.env.EMAIL_USER}>`,
           to: email,
           subject: "Verify your email - set your password",
-          html:setPasswordHtml
+          text: `Click this link to verify and set your password: ${verifyLink}`,
         });
 
       } catch (err) {
@@ -445,93 +342,6 @@ app.post("/employee/set-password", async (req, res) => {
 
 
 //-------------end registration employee code------------
-//-------------------add helper for automatic add leave balance if employee completed probation peroid
-async function autoGrantLeaveIfProbationCompleted(user) {
-  const today = new Date();
-
-  if (user.probationCompleted === true) return; // already credited
-  if (!user.probationEndDate) return;          // no probation date set
-  if (today < user.probationEndDate) return;   // still in probation
-
-  // default yearly leave
-  const YEARLY_CL = 15;
-  const YEARLY_SL = 6;
-
-  // credit leave
-  user.casualLeaveBalance += YEARLY_CL;
-  user.sickLeaveBalance += YEARLY_SL;
-
-  user.probationCompleted = true;
-  user.lastLeaveUpdate = today;
-
-
-
-  await user.save();
-  console.log(`🎉 Auto leave credited for ${user.name}`);
- const probationHtml= await probationCompletedTemplate();
-  // -----------------------------------------------------
-  // 1️⃣ SEND EMAIL TO EMPLOYEE
-  // -----------------------------------------------------
-  try {
-    await transporter.sendMail({
-      from: `"CWS EMS" <${process.env.EMAIL_USER}>`,
-      to: user.email,
-      subject: "🎉 Probation Period Completed – Leave Credited",
-       html: probationHtml
-//       text: `Dear ${user.name},
-      
-
-// Congratulations! You have successfully completed your probation period.
-
-// Your yearly leave balance has now been added:
-// • Casual Leave: +15
-// • Sick Leave: +6
-
-// You can check your updated leave balance on your dashboard.
-
-// Best Regards,
-// CWS EMS Team`
-    });
-    console.log("📧 Probation completion email sent!");
-  } catch (err) {
-    console.error("Email sending failed:", err);
-  }
-
-  // -----------------------------------------------------
-  // 2️⃣ SEND NOTIFICATION TO EMPLOYEE
-  // -----------------------------------------------------
-  await Notification.create({
-    userId: user._id,
-    message: "🎉 Congratulations! You have completed your probation period and yearly leave has been credited.",
-    createdAt: new Date()
-  });
-
-  // -----------------------------------------------------
-  // 3️⃣ SEND NOTIFICATION TO ADMIN
-  // -----------------------------------------------------
-  const admins = await User.find({ role: "admin" });
-
-  for (const admin of admins) {
-    await Notification.create({
-      userId: admin._id,
-      message: `${user.name} has completed probation and leave balance is credited.`,
-      createdAt: new Date()
-    });
-  }
-
-  // -----------------------------------------------------
-  // 4️⃣ SEND NOTIFICATION TO MANAGER (if assigned)
-  // -----------------------------------------------------
-  if (user.managerId) {
-    await Notification.create({
-      userId: user.managerId,
-      message: `Your team member ${user.name} has completed probation and leave is credited.`,
-      createdAt: new Date()
-    });
-  }
-}
-
-//-------------------end helper for automatic add leave balance if employee completed probation peroid
 
 
 //login code
@@ -558,29 +368,7 @@ app.post("/login", async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ success: false, error: "Invalid credential" });
     }
-
-
     console.log("isMatch", isMatch)
-
-
-
-
-
-
-
-    // -------------------------------------------------------
-    // ⭐ AUTO LEAVE CREDIT SECTION
-    // -------------------------------------------------------
-    await autoGrantLeaveIfProbationCompleted(user);
-    // -------------------------------------------------------
-
-
-
-
-
-
-
-
     const accessToken = jwt.sign({ _id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "1d" });
     const refreshToken = jwt.sign({ _id: user._id, role: user.role }, JWT_REFRESH_SECRET, { expiresIn: "7d" });
 
@@ -640,7 +428,55 @@ app.post("/refresh-token", async (req, res) => {
 });
 
 //update profile 
+// // Update employee profile
+// app.put("/employees/:id", upload.fields([
+//   { name: "image", maxCount: 1 },
+//   { name: "aadharCardPdf", maxCount: 1 },
+//   { name: "panCardPdf", maxCount: 1 },
+//   { name: "appointmentLetter", maxCount: 1 },
+//   { name: "passbookPdf", maxCount: 1 },
+// ]), async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     let employee = await User.findById(id);
+//     if (!employee) return res.status(404).json({ error: "Employee not found" });
 
+//     const body = req.body;
+
+//     // Update simple fields
+//     const simpleFields = ["name", "email", "contact", "employeeId", "gender", "dob", "maritalStatus", "designation", "department", "salary", "role", "doj", "casualLeaveBalance", "sickLeaveBalance", "probationMonths"];
+//     simpleFields.forEach(field => {
+//       if (body[field]) employee[field] = body[field];
+//     });
+
+//     // Update nested objects
+//     ["currentAddress", "permanentAddress", "bankDetails"].forEach(nested => {
+//       if (body[nested]) {
+//         try {
+//           const obj = typeof body[nested] === "string" ? JSON.parse(body[nested]) : body[nested];
+//           employee[nested] = { ...employee[nested], ...obj };
+//         } catch { }
+//       }
+//     });
+
+//     // Update files if uploaded
+//     const files = req.files;
+//     if (files) {
+//       ["image", "aadharCardPdf", "panCardPdf", "appointmentLetter", "passbookPdf"].forEach(fileKey => {
+//         if (files[fileKey]?.[0]) {
+//           if (fileKey === "passbookPdf") employee.bankDetails.passbookPdf = files[fileKey][0].filename;
+//           else employee[fileKey] = files[fileKey][0].filename;
+//         }
+//       });
+//     }
+
+//     await employee.save();
+//     res.json(employee);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// });
 
 // Update employee profile
 app.put(
@@ -664,8 +500,7 @@ app.put(
       const simpleFields = [
         "name", "email", "contact", "employeeId", "gender", "dob",
         "maritalStatus", "designation", "department", "salary", "role",
-        "doj", "casualLeaveBalance", "sickLeaveBalance", "probationMonths",
-        "pfNumber", "uanNumber"
+        "doj", "casualLeaveBalance", "sickLeaveBalance", "probationMonths"
       ];
       simpleFields.forEach(field => {
         if (body[field]) employee[field] = body[field];
@@ -762,15 +597,14 @@ app.post("/sendpasswordlink", async (req, res) => {
     })
     const setusertoken = await User.findByIdAndUpdate({ _id: userfind._id }, { verifytoken: token }, { new: true })
     //console.log("setusertoken",setusertoken)
-    const forLink=`https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net/forgotpassword/${userfind._id}/${setusertoken.verifytoken}`
-    const resetPasswordHtml= await rePasswordTemplate(forLink);
+
 
     if (setusertoken) {
       const mailOptions = {
         from: "komal@creativewebsolution.in",
         to: email,
         subject: "Password Reset Request - Employee Management System",
-       html: resetPasswordHtml
+        text: `this link valid for 5 min https://app-rect-fe-cpgsaadrg5bsfjab.centralus-01.azurewebsites.net/forgotpassword/${userfind._id}/${setusertoken.verifytoken}`
       }
 
       transporter.sendMail(mailOptions, (error, info) => {
@@ -894,14 +728,10 @@ app.get("/getAllEmployees", authenticate, async (req, res) => {
     if (req.user.role !== "admin" && req.user.role !== "ceo" && req.user.role !== "hr") {
       return res.status(403).json({ message: "Forbidden: Admins only" });
     }
-    // // Fetch all employees from DB
-    // const employees = await User.find({ isDeleted: false }).select(
-    //   "-password -refreshToken"
-    // );
-
-    // Return ALL employees including deleted
-    const employees = await User.find().select("-password -refreshToken");
-
+    // Fetch all employees from DB
+    const employees = await User.find({ isDeleted: false }).select(
+      "-password -refreshToken"
+    );
     res.json(employees);
   } catch (err) {
     console.error(err);
@@ -1454,7 +1284,6 @@ function monthsSinceJoining(doj) {
 //   }
 // });
 
-//admin set leave working code
 const YearlyLeaveSetting = require("./models/yearlyLeavesSettingsSchema")
 
 app.post("/leave/grant-yearly", async (req, res) => {
@@ -1512,8 +1341,6 @@ app.post("/leave/grant-yearly", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-
 
 // app.post("/leave/reset-all", async (req, res) => {
 //   try {
@@ -2794,7 +2621,7 @@ app.put("/leave/:leaveId/status", async (req, res) => {
 
 app.post("/attendance/regularization/apply", async (req, res) => {
   try {
-    const { employeeId, date, requestedCheckIn, requestedCheckOut, mode,reason } = req.body;
+    const { employeeId, date, requestedCheckIn, requestedCheckOut, mode } = req.body;
     console.log("checkin/checkout:", requestedCheckIn, requestedCheckOut, mode);
 
     if (!employeeId) return res.status(400).json({ error: "Employee ID is required" });
@@ -2841,7 +2668,6 @@ app.post("/attendance/regularization/apply", async (req, res) => {
             checkIn: checkInDate,
             checkOut: checkOutDate,
             status: "Pending",
-            reason:reason,
             requestedAt: new Date(),
             reportingManager: managerId,
           },
@@ -3317,14 +3143,12 @@ app.get("/leaves/:employeeId", async (req, res) => {
   }
 });
 
-//delete leave/withdraw leave
+//admin
 app.delete("/leave/:id", async (req, res) => {
   try {
     const leave = await Leave.findByIdAndDelete(req.params.id);
     if (!leave) return res.status(404).json({ error: "Leave not found" });
-
     res.json({ message: "Leave deleted successfully" });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -3617,310 +3441,6 @@ app.get("/attendance/all/:employeeId", async (req, res) => {
 });
 
 
-
-
-
-// edit myprofile delete proffile image
-app.delete("/employees/:id/image", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const field = req.query.field || "image";
-
-    const employee = await User.findById(id);
-    if (!employee) return res.status(404).json({ error: "Employee not found" });
-
-    // get the current URL depending on field (passbook stored in bankDetails)
-    let fileUrl;
-    if (field === "passbookPdf") {
-      fileUrl = employee.bankDetails?.passbookPdf;
-    } else {
-      fileUrl = employee[field];
-    }
-
-    if (!fileUrl) return res.status(404).json({ error: "No file found for that field" });
-
-    // Helper to extract Cloudinary public_id from URL:
-    const getCloudinaryPublicId = (url) => {
-      try {
-        // Matches: .../upload/(v1234/)?<public_id>.<ext>
-        const m = url.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/);
-        return m ? decodeURIComponent(m[1]) : null;
-      } catch (e) {
-        return null;
-      }
-    };
-
-    // If Cloudinary configured, attempt to delete remote file
-    let cloudinaryDeleted = false;
-    if (process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
-      const publicId = getCloudinaryPublicId(fileUrl);
-      if (publicId) {
-        try {
-          await cloudinary.uploader.destroy(publicId, { invalidate: true });
-          cloudinaryDeleted = true;
-        } catch (err) {
-          console.warn("Cloudinary deletion failed for", publicId, err.message || err);
-          // We do not abort — still remove DB reference below
-        }
-      }
-    }
-
-    // Remove URL from employee object
-    if (field === "passbookPdf") {
-      if (employee.bankDetails) {
-        employee.bankDetails.passbookPdf = undefined;
-      }
-    } else {
-      employee[field] = undefined;
-    }
-
-    await employee.save();
-
-    return res.json({
-      message: "File removed from employee record",
-      field,
-      cloudinaryDeleted,
-    });
-  } catch (err) {
-    console.error("Error deleting employee image:", err);
-    return res.status(500).json({ error: "Server error" });
-  }
-});
-
-
-
-
-
-
-
-
-
-// leave withdraw : Adesh code
-app.delete("/deleteleave/leave/:id", async (req, res) => {
-  const session = await mongoose.startSession();
-  try {
-    const { id } = req.params;
-    session.startTransaction();
-    console.log("id", id)
-    const leave = await Leave.findById(id).session(session);
-    if (!leave) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(404).json({ error: "Leave not found" });
-    }
-
-    if ((leave.status || "").toLowerCase() !== "pending") {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(400).json({ error: "Only pending leaves can be deleted" });
-    }
-
-    // delete the leave
-    const deleteRes = await Leave.deleteOne({ _id: leave._id }).session(session);
-    console.log("delete", deleteRes)
-
-    // build robust filter for leaveRef (cover both stored ObjectId and string cases)
-    const notifFilter = (() => {
-      if (Types.ObjectId.isValid(id)) {
-        return { leaveRef: { $in: [new Types.ObjectId(id), id] } };
-      }
-      return { leaveRef: id };
-    })();
-    console.log("notifFilter", notifFilter)
-
-    const notifRes = await Notification.deleteMany(notifFilter).session(session);
-    console.log("delete notification:", notifRes)
-    await session.commitTransaction();
-    session.endSession();
-
-    return res.json({
-      message: "Leave (pending) deleted successfully",
-      leaveDeleted: deleteRes.deletedCount || 0,
-      notificationsDeleted: notifRes.deletedCount || 0,
-    });
-  } catch (err) {
-    try { await session.abortTransaction(); } catch (e) { }
-    session.endSession();
-    console.error("Error deleting leave + notifications:", err);
-    return res.status(500).json({ error: err.message });
-  }
-});
-
-
-
-//adesh code- employeesetting
-app.post("/change-password", authenticate, async (req, res) => {
-  try {
-    const { currentPassword, newPassword, confirmPassword } = req.body;
-    const id = req.user._id;  // from JWT token
-
-    console.log(id)
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    const isMatch = await bcrypt.compare(currentPassword, user.password);
-
-
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message: "Incorrect current password",
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-
-
-    user.refreshToken = null;
-    user.verifytoken = null;
-
-    await user.save();
-
-    return res.json({
-      success: true,
-      message: "Password updated successfully",
-    });
-
-  } catch (err) {
-    console.error("Error changing password:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
-  }
-});
-
-
-
-// app.get("/attendance/manager/:managerId/today", async (req, res) => {
-//   try {
-//     const { managerId } = req.params;
-
-//     // 1) Validate managerId
-//     if (!managerId || !managerId.match(/^[0-9a-fA-F]{24}$/)) {
-//       return res.status(400).json({ message: "Invalid manager ID" });
-//     }
-
-//     // 2) Find all employees who report to this manager
-//     const employees = await User.find(
-//       { reportingManager: managerId },
-//       "_id name email department role employeeId reportingManager"
-//     );
-
-//     if (!employees.length) {
-//       return res.status(200).json({ employees: [] });
-//     }
-
-//     const employeeIds = employees.map((e) => e._id);
-
-//     // 3) Build "today" range
-//     const startOfToday = new Date();
-//     startOfToday.setHours(0, 0, 0, 0);
-
-//     const endOfToday = new Date();
-//     endOfToday.setHours(23, 59, 59, 999);
-
-//     // 4) Fetch today's attendance for those employees
-//     const records = await Attendance.find({
-//       employee: { $in: employeeIds },
-//       date: { $gte: startOfToday, $lte: endOfToday },
-//     })
-//       .populate(
-//         "employee",
-//         "name email department role employeeId reportingManager"
-//       )
-//       .sort({ date: -1 });
-
-//     // 5) Map employeeId -> attendance record
-//     const attendanceMap = new Map();
-//     records.forEach((rec) => {
-//       attendanceMap.set(rec.employee._id.toString(), rec);
-//     });
-
-//     // 6) Build unified employees array including absents
-//     const employeesWithTodayAttendance = employees.map((emp) => {
-//       const rec = attendanceMap.get(emp._id.toString());
-//       return {
-//         _id: emp._id,
-//         name: emp.name,
-//         email: emp.email,
-//         department: emp.department,
-//         role: emp.role,
-//         employeeId: emp.employeeId,
-//         reportingManager: emp.reportingManager,
-//         checkInTime: rec ? rec.checkInTime : null,
-//         checkOutTime: rec ? rec.checkOutTime : null,
-//         date: rec ? rec.date : null,
-//       };
-//     });
-
-//     return res.status(200).json({ employees: employeesWithTodayAttendance });
-//   } catch (err) {
-//     console.error("Error fetching manager today's attendance:", err);
-//     res.status(500).json({ message: "Server error", error: err.message });
-//   }
-// });
-
-app.get("/attendance/manager/:managerId/today", async (req, res) => {
-  try {
-    const { managerId } = req.params;
-
-    if (!managerId || !managerId.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({ message: "Invalid manager ID" });
-    }
-
-    const employees = await User.find(
-      { reportingManager: managerId },
-      "_id name email department role employeeId reportingManager",
-    );
-
-    if (!employees.length) {
-      return res.status(200).json({ employees: [] });
-    }
-
-    const employeeIds = employees.map((e) => e._id);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const records = await Attendance.find({
-      employee: { $in: employeeIds },
-      date: today,
-    });
-
-    const attendanceMap = new Map();
-    records.forEach((rec) => {
-      attendanceMap.set(rec.employee.toString(), rec);
-    });
-
-    const employeesWithTodayAttendance = employees.map((emp) => {
-      const rec = attendanceMap.get(emp._id.toString());
-      return {
-        _id: emp._id,
-        name: emp.name,
-        email: emp.email,
-        department: emp.department,
-        role: emp.role,
-        employeeId: emp.employeeId,
-        reportingManager: emp.reportingManager,
-
-        checkInTime: rec ? rec.checkIn : null,
-        checkOutTime: rec ? rec.checkOut : null,
-        date: rec ? rec.date : null,
-      };
-    });
-
-    res.status(200).json({ employees: employeesWithTodayAttendance });
-  } catch (err) {
-    console.error("Error fetching manager today's attendance:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
