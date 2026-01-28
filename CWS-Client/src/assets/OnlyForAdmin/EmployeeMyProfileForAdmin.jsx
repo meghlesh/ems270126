@@ -29,7 +29,7 @@ function EmployeeProfileForAdmin({ employee: stateEmployee }) {
       const fetchEmployee = async () => {
         try {
           const token = localStorage.getItem("accessToken");
-          const res = await axios.get(`http://localhost:8000/getEmployee/${empId}`, {
+          const res = await axios.get(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/getEmployee/${empId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           setEmployee(res.data);
@@ -373,14 +373,14 @@ case "uanNumber":
         }
       });
 
-      await axios.put(` http://localhost:8000/employees/${employee._id || empId}`, data, {
+      await axios.put(` https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/employees/${employee._id || empId}`, data, {
         headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
       });
 
       alert("Employee profile updated successfully!");
       setIsEditing(false);
 
-      const updated = await axios.get(` http://localhost:8000/getEmployee/${employee._id || empId}`, {
+      const updated = await axios.get(` https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/getEmployee/${employee._id || empId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -469,7 +469,7 @@ const getDocumentPreview = (fileName, label) => {
 
   const url = fileName.startsWith("http")
     ? fileName
-    : `http://localhost:8000/uploads/${fileName}`;
+    : `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/uploads/${fileName}`;
 
   const fileType = getFileType(fileName);
 
@@ -503,7 +503,7 @@ const handlePermanentDelete = async (id) => {
 
   try {
     const token = localStorage.getItem("accessToken");
-    const res = await axios.delete(`http://localhost:8000/deleteEmployee/${id}`, {
+    const res = await axios.delete(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/deleteEmployee/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -546,7 +546,7 @@ const handlePermanentDelete = async (id) => {
                   src={
                     employee?.image?.startsWith("http")
                       ? employee.image
-                      : `http://localhost:8000/uploads/${employee.image}`
+                      : `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/uploads/${employee.image}`
                   }
                   alt="Profile Preview"
                   style={{
@@ -1041,7 +1041,7 @@ const handlePermanentDelete = async (id) => {
                       href={
                         employee[field]?.startsWith("http")
                           ? employee[field]
-                          : `http://localhost:8000/uploads/${employee[field]}`
+                          : `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/uploads/${employee[field]}`
                       }
                       target="_blank"
                       rel="noopener noreferrer"
@@ -1072,7 +1072,7 @@ const handlePermanentDelete = async (id) => {
 
                 ) : employee.bankDetails?.passbookPdf ? (
                   <a
-                    href={`http://localhost:8000/uploads/${employee.bankDetails.passbookPdf}`}
+                    href={`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/uploads/${employee.bankDetails.passbookPdf}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

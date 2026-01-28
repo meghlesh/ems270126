@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import MyProfile from "../AllDashboards/MyProfile"
 import ChangePassword from './ChangePassword';
 function EmployeeSettings({ user }) {
-const [activeTab, setActiveTab] = useState("password");
+  const [activeTab, setActiveTab] = useState("changePassword");
   // const [passwords, setPasswords] = useState({
   //   currentPassword: "",
   //   newPassword: "",
@@ -61,7 +61,7 @@ const [activeTab, setActiveTab] = useState("password");
   //     const accessToken = localStorage.getItem("accessToken"); // from your login response
 
   //     const res = await axios.post(
-  //       "http://localhost:8000/change-password",
+  //       "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/change-password",
   //       {
   //         currentPassword,
   //         newPassword,
@@ -113,14 +113,14 @@ const [activeTab, setActiveTab] = useState("password");
 
         <button
           type="button"
-          className={`btn btn-sm ${activeTab === "password" ? "btn-primary" : "btn-outline-primary"
+          className={`btn btn-sm ${activeTab === "changePassword" ? "btn-primary" : "btn-outline-primary"
             }`}
           style={{
-            backgroundColor: activeTab === "password" ? "#3A5FBE" : "transparent",
+            backgroundColor: activeTab === "changePassword" ? "#3A5FBE" : "transparent",
             borderColor: "#3A5FBE",
-            color: activeTab === "password" ? "white" : "#3A5FBE"
+            color: activeTab === "changePassword" ? "white" : "#3A5FBE"
           }}
-          onClick={() => setActiveTab("password")}
+          onClick={() => setActiveTab("changePassword")}
         >
           Change Password
         </button>
@@ -135,7 +135,11 @@ const [activeTab, setActiveTab] = useState("password");
       )}
 
       {/* Change Password - same card design */}
-    {activeTab === "changePassword" && <ChangePassword />}
+      {activeTab === "changePassword" && (
+        <>
+          <ChangePassword />
+        </>
+      )}
 
     </div>
   );

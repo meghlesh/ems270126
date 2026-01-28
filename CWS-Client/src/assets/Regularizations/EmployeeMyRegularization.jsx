@@ -13,9 +13,9 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
 
   //new state
   const [statusFilter, setStatusFilter] = useState("All");
-const [dateFromFilter, setDateFromFilter] = useState("");
-const [dateToFilter, setDateToFilter] = useState("");
-const [filteredRequests, setFilteredRequests] = useState([]);
+  const [dateFromFilter, setDateFromFilter] = useState("");
+  const [dateToFilter, setDateToFilter] = useState("");
+  const [filteredRequests, setFilteredRequests] = useState([]);
 
 
 
@@ -27,7 +27,7 @@ const [filteredRequests, setFilteredRequests] = useState([]);
     const fetchRequests = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/attendance/regularization/my/${employeeId}`
+          `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/regularization/my/${employeeId}`
         );
         // ✅ Sort newest first (based on createdAt or request date)
         const sortedData = res.data.sort(
@@ -49,31 +49,31 @@ const [filteredRequests, setFilteredRequests] = useState([]);
     fetchRequests();
   }, [employeeId, refreshKey]);
 
- // dipali code
-useEffect(() => {
-  const sorted = requests
-    .filter(req =>
-      ["Pending", "Rejected", "Approved"].includes(req?.regularizationRequest?.status)
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.regularizationRequest?.requestedAt || b.createdAt || b.date) -
-        new Date(a.regularizationRequest?.requestedAt || a.createdAt || a.date)
-    );
+  // dipali code
+  useEffect(() => {
+    const sorted = requests
+      .filter(req =>
+        ["Pending", "Rejected", "Approved"].includes(req?.regularizationRequest?.status)
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.regularizationRequest?.requestedAt || b.createdAt || b.date) -
+          new Date(a.regularizationRequest?.requestedAt || a.createdAt || a.date)
+      );
 
-  setFilteredRequests(sorted);
-}, [requests]);
+    setFilteredRequests(sorted);
+  }, [requests]);
 
 
   const formatToIST = (utcDateString) => {
-  const date = new Date(utcDateString);
-  return date.toLocaleTimeString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-};
+    const date = new Date(utcDateString);
+    return date.toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  };
 
 
 
@@ -81,7 +81,7 @@ useEffect(() => {
     if (!window.confirm("Are you sure you want to delete this request?")) return;
 
     try {
-      await axios.delete(` http://localhost:8000/attendance/regularization/${id}`);
+      await axios.delete(` https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/regularization/${id}`);
       setRequests(requests.filter((req) => req._id !== id));
     } catch (err) {
       console.error("Delete failed", err);
@@ -95,21 +95,21 @@ useEffect(() => {
   //   (req) => req.regularizationRequest && req.regularizationRequest.status !== null
   // );
 
-// const filteredRequests = requests
-//   .filter((req) => req.regularizationRequest && req.regularizationRequest.status !== null)
-//   .sort(
-//     (a, b) =>
-//       new Date(
-//         b.regularizationRequest?.requestedAt ||
-//         b.createdAt ||
-//         b.date
-//       ) -
-//       new Date(
-//         a.regularizationRequest?.requestedAt ||
-//         a.createdAt ||
-//         a.date
-//       )
-//   );
+  // const filteredRequests = requests
+  //   .filter((req) => req.regularizationRequest && req.regularizationRequest.status !== null)
+  //   .sort(
+  //     (a, b) =>
+  //       new Date(
+  //         b.regularizationRequest?.requestedAt ||
+  //         b.createdAt ||
+  //         b.date
+  //       ) -
+  //       new Date(
+  //         a.regularizationRequest?.requestedAt ||
+  //         a.createdAt ||
+  //         a.date
+  //       )
+  //   );
 
 
 
@@ -137,7 +137,7 @@ useEffect(() => {
     setCurrentPage(pageNumber);
   };
 
-  console.log("currentRequests",currentRequests)
+  console.log("currentRequests", currentRequests)
   // if (loading) return <p>Loading...</p>;
 
   if (loading) {
@@ -173,97 +173,88 @@ useEffect(() => {
 
 
   const applyFilters = () => {
-  let temp = requests.filter(
-    req => ["Pending", "Rejected", "Approved"].includes(req.regularizationRequest?.status)
-  );
-
-  if (statusFilter !== "All") {
-    temp = temp.filter(
-      req =>
-        (req.regularizationRequest?.status || "").toLowerCase() === statusFilter.toLowerCase()
+    let temp = requests.filter(
+      req => ["Pending", "Rejected", "Approved"].includes(req.regularizationRequest?.status)
     );
-  }
 
-  if (dateFromFilter) {
-    temp = temp.filter(req => new Date(req.date) >= new Date(dateFromFilter));
-  }
-  if (dateToFilter) {
-    temp = temp.filter(req => new Date(req.date) <= new Date(dateToFilter));
-  }
+    if (statusFilter !== "All") {
+      temp = temp.filter(
+        req =>
+          (req.regularizationRequest?.status || "").toLowerCase() === statusFilter.toLowerCase()
+      );
+    }
 
- setFilteredRequests(
-  temp.sort(
-    (a, b) =>
-      new Date(b.regularizationRequest?.requestedAt || b.createdAt || b.date) -
-      new Date(a.regularizationRequest?.requestedAt || a.createdAt || a.date)
-  )
-);
+    if (dateFromFilter) {
+      temp = temp.filter(req => new Date(req.date) >= new Date(dateFromFilter));
+    }
+    if (dateToFilter) {
+      temp = temp.filter(req => new Date(req.date) <= new Date(dateToFilter));
+    }
 
-  setCurrentPage(1);
-};
+    setFilteredRequests(
+      temp.sort(
+        (a, b) =>
+          new Date(b.regularizationRequest?.requestedAt || b.createdAt || b.date) -
+          new Date(a.regularizationRequest?.requestedAt || a.createdAt || a.date)
+      )
+    );
 
-
-// Reset button restores original data
-const resetFilters = () => {
-  setStatusFilter("All");
-  setDateFromFilter("");
-  setDateToFilter("");
-setFilteredRequests(
-  requests
-    .filter(req =>
-      ["Pending", "Rejected", "Approved"].includes(req.regularizationRequest?.status)
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.regularizationRequest?.requestedAt || b.createdAt || b.date) -
-        new Date(a.regularizationRequest?.requestedAt || a.createdAt || a.date)
-    )
-);
+    setCurrentPage(1);
+  };
 
 
-  setCurrentPage(1);
-};
+  // Reset button restores original data
+  const resetFilters = () => {
+    setStatusFilter("All");
+    setDateFromFilter("");
+    setDateToFilter("");
+    setFilteredRequests(
+      requests
+        .filter(req =>
+          ["Pending", "Rejected", "Approved"].includes(req.regularizationRequest?.status)
+        )
+        .sort(
+          (a, b) =>
+            new Date(b.regularizationRequest?.requestedAt || b.createdAt || b.date) -
+            new Date(a.regularizationRequest?.requestedAt || a.createdAt || a.date)
+        )
+    );
+
+
+    setCurrentPage(1);
+  };
 
   return (
     <>
-    <div className="card mb-4 shadow-sm border-0 mt-2">
-  <div className="card-body">
-    <form
-      className="row g-2 align-items-center"
-      onSubmit={e => {
-        e.preventDefault();
-        applyFilters();
-      }}
-      style={{ justifyContent: "space-between" }}
-    >
-     <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-        <label htmlFor="statusFilter" className="fw-bold mb-0" style={{ fontSize: "16px", color: "#3A5FBE" }}>Status</label>
-        <select
-          id="statusFilter"
-          className="form-select"
-          style={{ minWidth: 100 }}
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value)}
-        >
-          <option value="All">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Approved">Approved</option>
-          <option value="Rejected">Rejected</option>
-        </select>
-      </div>
-    <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-        <label htmlFor="dateFromFilter" className="fw-bold mb-0" style={{ fontSize: "16px", color: "#3A5FBE", width:"50PX"}}>From</label>
-        <input
-          id="dateFromFilter"
-          type="date"
-          className="form-control"
-          value={dateFromFilter}
-          onChange={e => setDateFromFilter(e.target.value)}
-          style={{ minWidth: 140 }}
-        />
-      </div>
-      <style>
-    {`
+      {/* <div className="card mb-4 shadow-sm border-0 mt-2">
+        <div className="card-body">
+          <form
+            className="row g-2 align-items-center"
+            onSubmit={e => {
+              e.preventDefault();
+              applyFilters();
+            }}
+            style={{ justifyContent: "space-between" }}
+          >
+    
+            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
+              <label htmlFor="statusFilter" className="fw-bold mb-0 text-start text-md-end" style={{ fontSize: "16px", color: "#3A5FBE" }}>Status</label>
+              <select
+                id="statusFilter"
+                className="form-select"
+                style={{ minWidth: 100 }}
+                value={statusFilter}
+                onChange={e => setStatusFilter(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+
+            {/* <style>
+              {`
     .form-label-responsive {
       display: inline-block;
       width: 50px;
@@ -279,104 +270,171 @@ setFilteredRequests(
       }
     }
     `}
-  </style>
-    <div className="col-12 col-md-auto d-flex align-items-center mb-1">
-        <label htmlFor="dateToFilter" className="form-label-responsive fw-bold mb-0" style={{ fontSize: "16px", color: "#3A5FBE" }}>To</label>
-        <input
-          id="dateToFilter"
-          type="date"
-          className="form-control"
-          value={dateToFilter}
-          onChange={e => setDateToFilter(e.target.value)}
-          style={{ minWidth: 140 }}
-        />
+            </style> */}
+            {/* <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+              <label htmlFor="dateFromFilter" className="fw-bold mb-0 text-start text-md-end" style={{ fontSize: "16px", color: "#3A5FBE", width: "50px", minWidth: "50px", marginRight: "8px" }}>From</label>
+              <input
+                id="dateFromFilter"
+                type="date"
+                className="form-control"
+                value={dateFromFilter}
+                onChange={e => setDateFromFilter(e.target.value)}
+                style={{ minWidth: "140px" }}
+              />
+            </div>
+            <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+              <label htmlFor="dateToFilter" className="fw-bold mb-0 text-start text-md-end"
+                style={{ width: "50px", fontSize: "16px", color: "#3A5FBE", minWidth: "50px", marginRight: "8px" }}>To</label>
+              <input
+                id="dateToFilter"
+                type="date"
+                className="form-control"
+                value={dateToFilter}
+                onChange={e => setDateToFilter(e.target.value)}
+                style={{ minWidth: "140px" }}
+              />
+            </div>
+          </form>
+        </div>
+      </div> */} 
+
+
+             <div className="card mb-4 shadow-sm border-0 mt-2">
+        <div className="card-body">
+          <form
+            className="row g-2 align-items-center"
+            onSubmit={e => {
+              e.preventDefault();
+              applyFilters();
+            }}
+            style={{ justifyContent: "space-between" }}
+          >
+            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
+              <label htmlFor="statusFilter" className="fw-bold mb-0 text-start text-md-end" style={{ fontSize: "16px", color: "#3A5FBE"}}>Status</label>
+              <select
+                id="statusFilter"
+                className="form-select"
+                style={{ minWidth: 100 }}
+                value={statusFilter}
+                onChange={e => setStatusFilter(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+            <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+              <label htmlFor="dateFromFilter" className="fw-bold mb-0 text-start text-md-end" style={{ fontSize: "16px", color: "#3A5FBE", width: "50px" ,minWidth:"50px" ,marginRight: "8px"}}>From</label>
+              <input
+                id="dateFromFilter"
+                type="date"
+                className="form-control"
+                value={dateFromFilter}
+                onChange={e => setDateFromFilter(e.target.value)}
+                style={{ minWidth: "140px"}}
+              />
+            </div> 
+            <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+              <label htmlFor="dateToFilter" className="fw-bold mb-0 text-start text-md-end" 
+              style={{width: "50px" , fontSize: "16px", color: "#3A5FBE", minWidth:"50px",marginRight: "8px"}}>To</label>
+              <input
+                id="dateToFilter"
+                type="date"
+                className="form-control"
+                value={dateToFilter}
+                onChange={e => setDateToFilter(e.target.value)}
+                style={{ minWidth: "140px" }}
+              />
+            </div>   
+
+            <div className="col-auto ms-auto d-flex gap-2">
+              <button type="submit"
+                style={{ minWidth: 90 }}
+                className="btn btn-sm custom-outline-btn"
+              >
+                Filter
+              </button>
+              <button type="button"
+                style={{ minWidth: 90 }}
+                className="btn btn-sm custom-outline-btn"
+                onClick={resetFilters}>
+                Reset
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-      <div className="col-auto ms-auto d-flex gap-2">
-        <button type="submit" 
-         style={{  minWidth: 90 }}
-           className="btn btn-sm custom-outline-btn"
-        >
-          Filter
-        </button>
-        <button type="button" 
-         style={{  minWidth: 90 }}
-           className="btn btn-sm custom-outline-btn"
-          onClick={resetFilters}>
-          Reset
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
 
 
-    <div className="card shadow-sm border-0">
-      <div className="table-responsive bg-white">
-        <table className="table table-hover mb-0">
-          <thead style={{ backgroundColor: "#ffffffff" }}>
-            <tr >
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Date</th>
-             <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Apply Date</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Check-In</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Check-Out</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Mode</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Reason</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Status</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentRequests.length === 0 ? (
-    <tr>
-      <td colSpan="6" className="text-center py-4" style={{ color: "#6c757d" }}>
-        No regularization requests found.
-      </td>
-    </tr>
-  ) : (
-      currentRequests.map((req, index) => {
-              const checkInTime = req.checkIn || req?.regularizationRequest?.checkIn;
-              const checkOutTime = req.checkOut || req?.regularizationRequest?.checkOut;
 
-              return (
-                <tr key={req._id || index} onClick={() => setSelectedRequest(req)}  style={{ cursor: "pointer" }}>
-                  <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
-                    {new Date(req.date).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
+      <div className="card shadow-sm border-0">
+        <div className="table-responsive bg-white">
+          <table className="table table-hover mb-0">
+            <thead style={{ backgroundColor: "#ffffffff" }}>
+              <tr >
+                <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Date</th>
+                <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Apply Date</th>
+                <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Check-In</th>
+                <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Check-Out</th>
+                <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Mode</th>
+                <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Reason</th>
+                <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Status</th>
+                <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentRequests.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-4" style={{ color: "#6c757d" }}>
+                    No regularization requests found.
                   </td>
-                  <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
-                    {new Date(req.regularizationRequest.requestedAt).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </td>
-                  <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>{formatToIST(checkInTime)}</td>
-                  <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>{formatToIST(checkOutTime)}</td>
-                  <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>{req.mode?.trim().toLowerCase() === "office" ? "WFO" : req.mode}</td>
-                  <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>{req?.regularizationRequest?.reason || "—"}</td>
-                  <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
-                    {req?.regularizationRequest?.status === "Approved" ? (
-                      <span style={{ backgroundColor: '#d1f2dd', padding: '8px 16px', borderRadius: '4px', fontSize: '13px', fontWeight: '500', display: 'inline-block', width: "100px", textAlign: "center" }}>
-                        Approved
-                      </span>
-                    ) : req?.regularizationRequest?.status === "Rejected" ? (
-                      <span style={{ backgroundColor: '#f8d7da', padding: '8px 16px', borderRadius: '4px', fontSize: '13px', fontWeight: '500', display: 'inline-block', width: "100px", textAlign: "center" }}>
-                        Rejected
-                      </span>
-                    ) : req?.regularizationRequest?.status === "Pending" ? (
-                      <span style={{ backgroundColor: '#FFE493', padding: '8px 16px', borderRadius: '4px', fontSize: '13px', fontWeight: '500', display: 'inline-block', width: "100px", textAlign: "center" }}>
-                        Pending
-                      </span>
-                    ) : (
-                      <span className="badge bg-secondary-subtle text-dark px-3 py-2">
-                        N/A
-                      </span>
-                    )}
-                  </td>
-                  {/* <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
+                </tr>
+              ) : (
+                currentRequests.map((req, index) => {
+                  const checkInTime = req.checkIn || req?.regularizationRequest?.checkIn;
+                  const checkOutTime = req.checkOut || req?.regularizationRequest?.checkOut;
+
+                  return (
+                    <tr key={req._id || index} onClick={() => setSelectedRequest(req)} style={{ cursor: "pointer" }}>
+                      <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
+                        {new Date(req.date).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </td>
+                      <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
+                        {new Date(req.regularizationRequest.requestedAt).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </td>
+                      <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>{formatToIST(checkInTime)}</td>
+                      <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>{formatToIST(checkOutTime)}</td>
+                      <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>{req.mode?.trim().toLowerCase() === "office" ? "WFO" : req.mode}</td>
+                      <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>{req?.regularizationRequest?.reason || "—"}</td>
+                      <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
+                        {req?.regularizationRequest?.status === "Approved" ? (
+                          <span style={{ backgroundColor: '#d1f2dd', padding: '8px 16px', borderRadius: '4px', fontSize: '13px', fontWeight: '500', display: 'inline-block', width: "100px", textAlign: "center" }}>
+                            Approved
+                          </span>
+                        ) : req?.regularizationRequest?.status === "Rejected" ? (
+                          <span style={{ backgroundColor: '#f8d7da', padding: '8px 16px', borderRadius: '4px', fontSize: '13px', fontWeight: '500', display: 'inline-block', width: "100px", textAlign: "center" }}>
+                            Rejected
+                          </span>
+                        ) : req?.regularizationRequest?.status === "Pending" ? (
+                          <span style={{ backgroundColor: '#FFE493', padding: '8px 16px', borderRadius: '4px', fontSize: '13px', fontWeight: '500', display: 'inline-block', width: "100px", textAlign: "center" }}>
+                            Pending
+                          </span>
+                        ) : (
+                          <span className="badge bg-secondary-subtle text-dark px-3 py-2">
+                            N/A
+                          </span>
+                        )}
+                      </td>
+                      {/* <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
                     <button
                       // className="btn btn-sm"
                       // style={{
@@ -394,189 +452,189 @@ setFilteredRequests(
                       Delete
                     </button>
                   </td> */}
-                  <td
-  style={{
-    padding: "12px",
-    verticalAlign: "middle",
-    fontSize: "14px",
-    borderBottom: "1px solid #dee2e6",
-    whiteSpace: "nowrap",
-  }}
->
-  {(req?.regularizationRequest?.status === "Pending" ||
-    req?.regularizationRequest?.status === "Rejected") && (
-    <button
-      // className="btn btn-sm btn-outline"
-      // style={{ color: "#3A5FBE", borderColor: "#3A5FBE" }}
-                            className="btn btn-outline-danger btn-sm"
+                      <td
+                        style={{
+                          padding: "12px",
+                          verticalAlign: "middle",
+                          fontSize: "14px",
+                          borderBottom: "1px solid #dee2e6",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {(req?.regularizationRequest?.status === "Pending" ||
+                          req?.regularizationRequest?.status === "Rejected") && (
+                            <button
+                              // className="btn btn-sm btn-outline"
+                              // style={{ color: "#3A5FBE", borderColor: "#3A5FBE" }}
+                              className="btn btn-outline-danger btn-sm"
 
-      onClick={(e) => {
-        e.stopPropagation();
-        handleDelete(req._id);
-      }}
-    >
-      Delete
-    </button>
-  )}
-</td>
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(req._id);
+                              }}
+                            >
+                              Delete
+                            </button>
+                          )}
+                      </td>
 
-                </tr>
-              );
-            }))}
-          </tbody>
-        </table>
-      </div>
-</div>
-
-
-{/* MODAL code */}
-     {selectedRequest && (
-  <div
-    className="modal fade show"
-    style={{
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: "rgba(0,0,0,0.5)",
-      position: "fixed",
-      inset: 0,
-      zIndex: 1050,
-    }}
-  >
-    <div className="modal-dialog modal-dialog-scrollable"
-         style={{ maxWidth: "650px", width: "95%", marginTop: "200px", }}>
-      <div className="modal-content">
-
-        {/* Header */}
-        <div className="modal-header text-white" style={{ backgroundColor: "#3A5FBE" }}>
-          <h5 className="modal-title mb-0">Regularization Request Details</h5>
-          <button
-            type="button"
-            className="btn-close btn-close-white"
-            onClick={() => setSelectedRequest(null)}
-          />
+                    </tr>
+                  );
+                }))}
+            </tbody>
+          </table>
         </div>
+      </div>
 
-        {/* Body */}
-        <div className="modal-body">
-          <div className="container-fluid">
-            <div className="row mb-2">
-              <div className="col-5 col-sm-3 fw-semibold">Date</div>
-              <div className="col-7 col-sm-9">
-                {new Date(selectedRequest.date).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
+
+      {/* MODAL code */}
+      {selectedRequest && (
+        <div
+          className="modal fade show"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0,0,0,0.5)",
+            position: "fixed",
+            inset: 0,
+            zIndex: 1050,
+          }}
+        >
+          <div className="modal-dialog modal-dialog-scrollable"
+            style={{ maxWidth: "650px", width: "95%", marginTop: "200px", }}>
+            <div className="modal-content">
+
+              {/* Header */}
+              <div className="modal-header text-white" style={{ backgroundColor: "#3A5FBE" }}>
+                <h5 className="modal-title mb-0">Regularization Request Details</h5>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() => setSelectedRequest(null)}
+                />
               </div>
-            </div>
 
-            <div className="row mb-2">
-              <div className="col-5 col-sm-3 fw-semibold">Apply Date</div>
-              <div className="col-7 col-sm-9">
-                {new Date(selectedRequest.regularizationRequest.requestedAt)
-                  .toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })}
+              {/* Body */}
+              <div className="modal-body">
+                <div className="container-fluid">
+                  <div className="row mb-2">
+                    <div className="col-5 col-sm-3 fw-semibold">Date</div>
+                    <div className="col-7 col-sm-9">
+                      {new Date(selectedRequest.date).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="row mb-2">
+                    <div className="col-5 col-sm-3 fw-semibold">Apply Date</div>
+                    <div className="col-7 col-sm-9">
+                      {new Date(selectedRequest.regularizationRequest.requestedAt)
+                        .toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                    </div>
+                  </div>
+
+                  <div className="row mb-2">
+                    <div className="col-5 col-sm-3 fw-semibold">Check-In</div>
+                    <div className="col-7 col-sm-9">
+                      {formatToIST(
+                        selectedRequest.checkIn ||
+                        selectedRequest?.regularizationRequest?.checkIn
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="row mb-2">
+                    <div className="col-5 col-sm-3 fw-semibold">Check-Out</div>
+                    <div className="col-7 col-sm-9">
+                      {formatToIST(
+                        selectedRequest.checkOut ||
+                        selectedRequest?.regularizationRequest?.checkOut
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="row mb-2">
+                    <div className="col-5 col-sm-3 fw-semibold">Mode</div>
+                    <div className="col-7 col-sm-9">
+                      {selectedRequest.mode?.trim().toLowerCase() === "office"
+                        ? "WFO"
+                        : selectedRequest.mode || "-"}
+                    </div>
+                  </div>
+
+                  <div className="row mb-2">
+                    <div className="col-sm-3 fw-semibold col-5">Reason</div>
+                    <div
+                      className="col-sm-9 col-7"
+                      style={{
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
+                      }}
+                    >
+                      {selectedRequest?.regularizationRequest?.reason || "-"}
+                    </div>
+                  </div>
+
+                  <div className="row mb-2">
+                    <div className="col-5 col-sm-3 fw-semibold">Status</div>
+                    <div className="col-7 col-sm-9">
+                      <span
+                        className={
+                          "badge text-capitalize " +
+                          (selectedRequest?.regularizationRequest?.status === "Approved"
+                            ? "bg-success"
+                            : selectedRequest?.regularizationRequest?.status === "Rejected"
+                              ? "bg-danger"
+                              : "bg-warning text-dark")
+                        }
+                      >
+                        {selectedRequest?.regularizationRequest?.status || "N/A"}
+                      </span>
+                    </div>
+                  </div>
+
+
+                </div>
               </div>
-            </div>
 
-            <div className="row mb-2">
-              <div className="col-5 col-sm-3 fw-semibold">Check-In</div>
-              <div className="col-7 col-sm-9">
-                {formatToIST(
-                  selectedRequest.checkIn ||
-                  selectedRequest?.regularizationRequest?.checkIn
-                )}
-              </div>
-            </div>
-
-            <div className="row mb-2">
-              <div className="col-5 col-sm-3 fw-semibold">Check-Out</div>
-              <div className="col-7 col-sm-9">
-                {formatToIST(
-                  selectedRequest.checkOut ||
-                  selectedRequest?.regularizationRequest?.checkOut
-                )}
-              </div>
-            </div>
-
-            <div className="row mb-2">
-              <div className="col-5 col-sm-3 fw-semibold">Mode</div>
-              <div className="col-7 col-sm-9">
-                {selectedRequest.mode?.trim().toLowerCase() === "office"
-                  ? "WFO"
-                  : selectedRequest.mode || "-"}
-              </div>
-            </div>
-
-              <div className="row mb-2">
-            <div className="col-sm-3 fw-semibold col-5">Reason</div>
-            <div
-              className="col-sm-9 col-7"
-              style={{
-                whiteSpace: "normal",
-                wordBreak: "break-word",
-                overflowWrap: "break-word",
-              }}
-            >
-              {selectedRequest?.regularizationRequest?.reason || "-"}
-            </div>
-          </div>
-
-            <div className="row mb-2">
-              <div className="col-5 col-sm-3 fw-semibold">Status</div>
-              <div className="col-7 col-sm-9">
-                <span
-                  className={
-                    "badge text-capitalize " +
-                    (selectedRequest?.regularizationRequest?.status === "Approved"
-                      ? "bg-success"
-                      : selectedRequest?.regularizationRequest?.status === "Rejected"
-                      ? "bg-danger"
-                      : "bg-warning text-dark")
-                  }
+              {/* Footer */}
+              <div className="modal-footer border-0 pt-0">
+                {(selectedRequest?.regularizationRequest?.status === "Pending" ||
+                  selectedRequest?.regularizationRequest?.status === "Rejected") && (
+                    <button
+                      className="btn btn-outline-danger me-2"
+                      onClick={() => {
+                        handleDelete(selectedRequest._id);
+                        setSelectedRequest(null);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  )}
+                <button
+                  className="btn  custom-outline-btn"
+                  onClick={() => setSelectedRequest(null)}
                 >
-                  {selectedRequest?.regularizationRequest?.status || "N/A"}
-                </span>
+                  Close
+                </button>
               </div>
             </div>
-
-          
           </div>
         </div>
+      )}
 
-        {/* Footer */}
-        <div className="modal-footer border-0 pt-0">
-          {(selectedRequest?.regularizationRequest?.status === "Pending" ||
-            selectedRequest?.regularizationRequest?.status === "Rejected") && (
-            <button
-              className="btn btn-outline-danger me-2"
-              onClick={() => {
-                handleDelete(selectedRequest._id);
-                setSelectedRequest(null);
-              }}
-            >
-              Delete
-            </button>
-          )}
-          <button
-             className="btn  custom-outline-btn"
-            onClick={() => setSelectedRequest(null)}
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
+      {/* modal code end */}
 
-{/* modal code end */}
-
-  {/* 🔹 Pagination Controls */}
+      {/* 🔹 Pagination Controls */}
       <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
         <div className="d-flex align-items-center gap-3">
           {/* Rows per page */}
@@ -598,7 +656,7 @@ setFilteredRequests(
           </div>
 
           {/* Range display */}
-        {/* Range display */}
+          {/* Range display */}
           <span style={{ fontSize: "14px", marginLeft: "16px" }}>
             {filteredRequests.length === 0
               ? "0–0 of 0"
@@ -626,19 +684,19 @@ setFilteredRequests(
           </div>
         </div>
       </nav>
-    
-      <div className="text-end mt-2" style={{marginRight: "10px"}}>
+
+      <div className="text-end mt-2" style={{ marginRight: "10px" }}>
         <button
-           style={{  minWidth: 90 }}
-           className="btn btn-sm custom-outline-btn"
+          style={{ minWidth: 90 }}
+          className="btn btn-sm custom-outline-btn"
           onClick={() => window.history.go(-1)}
         >
           Back
         </button>
       </div>
 
-</>
-    
+    </>
+
   );
 }
 

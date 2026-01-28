@@ -30,28 +30,47 @@ const upcomingEvents = eventsList.filter((event) => {
   // ------------------ HOLIDAYS ------------------
 
 
-  useEffect(() => {
-    const fetchHolidays = async () => {
-      try {
-        const res = await axios.get("http://localhost:8000/getHolidays");
-        const currentYearHolidays = res.data.filter(
-          (h) => new Date(h.date).getFullYear() === currentYear
-        );
-        setHolidayList(currentYearHolidays);
-      } catch (err) {
-        console.error("Failed to fetch holidays:", err.response || err.message);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchHolidays = async () => {
+  //     try {
+  //       const res = await axios.get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/getHolidays");
+  //       const currentYearHolidays = res.data.filter(
+  //         (h) => new Date(h.date).getFullYear() === currentYear
+  //       );
+  //       setHolidayList(currentYearHolidays);
+  //     } catch (err) {
+  //       console.error("Failed to fetch holidays:", err.response || err.message);
+  //     }
+  //   };
 
-    fetchHolidays();
-  }, []);
+  //   fetchHolidays();
+  // }, []);
+
+
+  // gitanjali
+  useEffect(() => {
+  const fetchHolidays = async () => {
+    try {
+      const res = await axios.get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/getHolidays");
+
+      // Sort by date and store all holidays
+      const sorted = res.data.sort((a, b) => new Date(a.date) - new Date(b.date));
+      setHolidayList(sorted);
+
+    } catch (err) {
+      console.error("Failed to fetch holidays:", err.response || err.message);
+    }
+  };
+
+  fetchHolidays();
+}, []);
 
   const handleDeleteHoliday = async (id) => {
     if (!window.confirm("Are you sure you want to delete this holiday?")) return;
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.delete(`http://localhost:8000/holidays/${id}`, {
+      await axios.delete(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/holidays/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setHolidayList((prev) => prev.filter((h) => h._id !== id));
@@ -70,7 +89,7 @@ const upcomingEvents = eventsList.filter((event) => {
   //     try {
   //       const token = localStorage.getItem("accessToken"); // assuming auth is needed
   //       const res = await axios.get(
-  //         "  http://localhost:8000/events-for-employee",
+  //         "  https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/events-for-employee",
   //         { headers: { Authorization: `Bearer ${token}` } }
   //       );
   //       // Sort events by date
@@ -88,7 +107,7 @@ const upcomingEvents = eventsList.filter((event) => {
     const fetchEvents = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        const res = await axios.get("http://localhost:8000/events-for-employee", {
+        const res = await axios.get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/events-for-employee", {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log("Events response:", res.data); // 👀 check shape
@@ -109,7 +128,7 @@ const upcomingEvents = eventsList.filter((event) => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.delete(`http://localhost:8000/events/${id}`, {
+      await axios.delete(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/events/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEventsList((prev) => prev.filter((h) => h._id !== id));

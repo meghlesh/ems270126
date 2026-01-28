@@ -30,7 +30,7 @@ function AdminAddLeaveBalance() {
   //NEW CODE
   useEffect(() => {
     axios
-      .get(" http://localhost:8000/leaves")
+      .get(" https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leaves")
       .then((res) => {
         const sortedLeaves = res.data.sort(
           (a, b) => new Date(b.appliedAt) - new Date(a.appliedAt)
@@ -53,7 +53,7 @@ function AdminAddLeaveBalance() {
     if (!token) return;
 
     axios
-      .get("http://localhost:8000/me", {
+      .get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/me", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setUser(res.data))
@@ -63,7 +63,7 @@ function AdminAddLeaveBalance() {
   // 🔹 Fetch all leaves
   useEffect(() => {
     axios
-      .get("http://localhost:8000/leaves")
+      .get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leaves")
       .then((res) => {
         const sortedLeaves = res.data.sort(
           (a, b) => new Date(b.appliedAt) - new Date(a.appliedAt)
@@ -82,7 +82,7 @@ function AdminAddLeaveBalance() {
   //   if (!user?._id) return;
 
   //   try {
-  //     await axios.put(`http://localhost:8000/leave/${leaveId}/status`, {
+  //     await axios.put(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/${leaveId}/status`, {
   //       status,
   //       userId: user._id,
   //       role: "admin",
@@ -104,7 +104,7 @@ function AdminAddLeaveBalance() {
   if (!user?._id) return;
 
   try {
-    await axios.put(`http://localhost:8000/leave/${leaveId}/status`, {
+    await axios.put(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/${leaveId}/status`, {
       status,
       userId: user._id,
       role: "admin",
@@ -138,7 +138,7 @@ function AdminAddLeaveBalance() {
 
   // const grantYearly = async () => {
   //   try {
-  //     const res = await axios.post("http://localhost:8000/leave/grant-yearly", {
+  //     const res = await axios.post("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/grant-yearly", {
   //       sl,
   //       cl,
   //     });
@@ -155,7 +155,7 @@ function AdminAddLeaveBalance() {
   const [data, setData] = useState([]);
   const fetchYearlySettings = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/leave/yearly-settings");
+      const res = await axios.get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/yearly-settings");
       setData(res.data);
     } catch (err) {
       console.error("Error fetching yearly settings:", err);
@@ -170,7 +170,7 @@ function AdminAddLeaveBalance() {
 
   const grantYearly = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/leave/grant-yearly", {
+      const res = await axios.post("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/grant-yearly", {
         sl,
         cl,
       });
@@ -201,7 +201,7 @@ function AdminAddLeaveBalance() {
 
   const grantMonthly = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/leave/grant-monthly", {
+      const res = await axios.post("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/grant-monthly", {
         sl,
         cl,
       });
@@ -217,7 +217,7 @@ function AdminAddLeaveBalance() {
 
   const fetchLeaveBalance = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/leave/balance");
+      const res = await axios.get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/balance");
       console.log("data", res.data
 
       )
@@ -269,7 +269,7 @@ function AdminAddLeaveBalance() {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:8000/leave/${leaveId}`);
+      await axios.delete(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/${leaveId}`);
 
       // ✅ Remove the deleted leave from state
       setLeaves((prev) => prev.filter((l) => l._id !== leaveId));
@@ -288,7 +288,7 @@ function AdminAddLeaveBalance() {
   //   }
 
   //   try {
-  //     const res = await axios.post("http://localhost:8000/leave/reset-all");
+  //     const res = await axios.post("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/reset-all");
   //     setMessage(`${res.data.message} (${res.data.count} employees affected) ✅`);
   //   } catch (err) {
   //     console.error("Error resetting leave balances:", err);
@@ -308,7 +308,7 @@ function AdminAddLeaveBalance() {
     }
 
     try {
-      const res = await axios.delete("http://localhost:8000/leave/reset-all");
+      const res = await axios.delete("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/reset-all");
       alert(res.data.message);
       setData([]); // clear yearly table instantly
     } catch (err) {
@@ -574,8 +574,9 @@ function AdminAddLeaveBalance() {
             }}
           >
             {/* Status Filter */}
-            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-              <label htmlFor="statusFilter" className="fw-bold mb-0" style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}>
+                       <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1  ms-2">
+              <label htmlFor="statusFilter" className="fw-bold mb-0 text-start text-md-end" 
+              style={{ width: "55px", fontSize: "16px", color: "#3A5FBE", marginRight: "4px" }}>
                 Status
               </label>
               <select
@@ -595,8 +596,9 @@ function AdminAddLeaveBalance() {
             </div>
 
             {/* Name Filter */}
-            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-              <label htmlFor="employeeNameFilter" className="fw-bold mb-0" style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}>
+            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1  ms-2">
+              <label htmlFor="employeeNameFilter" className="fw-bold mb-0 text-start text-md-end" 
+              style={{ width: "50px", fontSize: "16px", color: "#3A5FBE",marginRight: "8px"}}>
                 Name
               </label>
               <input
@@ -614,8 +616,9 @@ function AdminAddLeaveBalance() {
             </div>
 
             {/* From Date Filter */}
-            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-              <label htmlFor="dateFromFilter" className="fw-bold mb-0" style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}>
+            <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+              <label htmlFor="dateFromFilter" className="fw-bold mb-0 text-start text-md-end" 
+              style={{  fontSize: "16px", color: "#3A5FBE", width: "50px" ,minWidth:"50px" ,marginRight: "8px"}}>
                 From
               </label>
               <input
@@ -631,29 +634,13 @@ function AdminAddLeaveBalance() {
               />
             </div>
 
-            {/* To Date Filter */}
+            
 
-            <style>
-              {`
-    .form-label-responsive {
-      display: inline-block;
-      width: 50px;
-      min-width: 50px;
-      text-align: left;
-      margin-right: 0;
-    }
-    @media (min-width: 768px) {
-      .form-label-responsive {
-        width: 20px !important;
-        min-width:20px !important;
-        margin-right: 8px !important;
-      }
-    }
-    `}
-            </style>
+       
 
-            <div className="col-12 col-md-auto d-flex align-items-center mb-1">
-              <label htmlFor="dateToFilter" className="fw-bold mb-0 form-label-responsive" style={{ fontSize: "16px", color: "#3A5FBE" }}>
+            <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+              <label htmlFor="dateToFilter" className="fw-bold mb-0 text-start text-md-end " 
+              style={{  fontSize: "16px", color: "#3A5FBE", width: "50px" ,minWidth:"50px" ,marginRight: "8px", textAlign: "right" }}>
                 To
               </label>
               <input
@@ -668,7 +655,6 @@ function AdminAddLeaveBalance() {
                 onBlur={e => (e.target.type = 'text')}
               />
             </div>
-
             {/* Filter and Reset buttons */}
             <div className="col-12 col-md-auto ms-md-auto d-flex gap-2 mb-1 justify-content-end">
               <button

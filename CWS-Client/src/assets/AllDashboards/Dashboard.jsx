@@ -36,6 +36,7 @@ import ManagerDashboard from "./ManagerDashboard";
 import EmployeeMyProfileForAdmin from "../OnlyForAdmin/EmployeeMyProfileForAdmin";
 import EmployeeFullAttendance from "../OnlyForAdmin/EmployeeFullAttendace";
 import HrAdminLeavebalance from "./HrAdminLeavebalance";
+import ManagerAssignedEmployeesAttendance from "../OnlyForAdmin/ManagerAssignEmployeeAttendance";
 
 function Dashboard() {
   const { role, username, id } = useParams();
@@ -58,21 +59,21 @@ function Dashboard() {
       sessionStorage.clear();
 
       // ✅ Navigate once only
-      if (window.location.pathname !== "/login") {
-        navigate("/login", { replace: true });
+      if (window.location.pathname !== "/") {
+        navigate("/", { replace: true });
       }
       return;
     }
 
     const token = localStorage.getItem("accessToken");
     if (!token) {
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
       return;
     }
 
     let isMounted = true;
     axios
-      .get("http://localhost:8000/me", {
+      .get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/me", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -82,7 +83,7 @@ function Dashboard() {
         console.error("Token check failed:", err?.response?.status);
         localStorage.clear();
         sessionStorage.clear();
-        if (isMounted) navigate("/login", { replace: true });
+        if (isMounted) navigate("/", { replace: true });
       });
 
     return () => {
@@ -94,19 +95,19 @@ function Dashboard() {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
-      navigate("/login");
+      navigate("/");
       return;
     }
 
     axios
-      .get(`http://localhost:8000/me`, {
+      .get(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setUser(res.data))
       .catch(() => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        navigate("/login");
+        navigate("/");
       });
   }, [navigate]);
 
@@ -117,7 +118,7 @@ function Dashboard() {
       setIsLoggingOut(true);
       const refreshToken = localStorage.getItem("refreshToken");
       // call backend to invalidate refresh token (optional)
-      await axios.post("http://localhost:8000/logout", { refreshToken });
+      await axios.post("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/logout", { refreshToken });
 
       // clear everything
       // ❗ Clear active browser session
@@ -140,7 +141,7 @@ function Dashboard() {
       // navigate once after clearing
       // Give time for spinner before redirect
       setTimeout(() => {
-        navigate("/login", { replace: true });
+        navigate("/", { replace: true });
       }, 800);
     } catch (err) {
       console.error("Logout error:", err);
@@ -150,7 +151,7 @@ function Dashboard() {
       localStorage.removeItem("role");
       localStorage.removeItem("username");
       localStorage.removeItem("id");
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     } finally {
       // optional spinner stop (navigate will mount login)
       setIsLoggingOut(false);
@@ -241,7 +242,7 @@ console.log("user",user)
                 )
               }
             />
-
+  <Route path="TeamAttendance" element={<ManagerAssignedEmployeesAttendance user={user} />} />
 
             {/* manager-core-dashboard */}
             <Route
@@ -316,7 +317,7 @@ console.log("user",user)
             <Route
               path="employeeattendance/:empId"
               element={
-                user.role === "admin" || user.role === "ceo" || user.role === "hr" ? (
+                user.role === "admin" || user.role === "ceo" || user.role === "hr" || user.role === "manager" ? (
                   <EmployeeFullAttendance />
                 ) : (
                   <h5 className="text-center mt-4 text-danger">

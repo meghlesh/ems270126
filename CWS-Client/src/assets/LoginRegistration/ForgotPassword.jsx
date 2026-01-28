@@ -18,7 +18,7 @@ function ForgotPassword() {
   const userValid = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/forgotpassword/${id}/${token}`,
+        `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/forgotpassword/${id}/${token}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -50,7 +50,7 @@ function ForgotPassword() {
     }
 
     const res = await fetch(
-      `http://localhost:8000/forgotpassword/${id}/${token}`,
+      `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/forgotpassword/${id}/${token}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -118,7 +118,7 @@ function ForgotPassword() {
               >
                 <FontAwesomeIcon
                   icon={showPassword ? faEyeSlash : faEye}
-                  style={{ color: "#6c757d" }}
+                  style={{ color: "#3a5fbf" }}
                 />
               </span>
             </div>
@@ -149,7 +149,7 @@ function ForgotPassword() {
               >
                 <FontAwesomeIcon
                   icon={showConfirmPassword ? faEyeSlash : faEye}
-                  style={{ color: "#6c757d", }}
+                  style={{ color: "#3a5fbf" }}
                 />
               </span>
             </div>

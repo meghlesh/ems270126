@@ -15,7 +15,7 @@
 //   // Fetch existing office location from backend
 //   useEffect(() => {
 //     axios
-//       .get(" http://localhost:8000/admin/office-location")
+//       .get(" https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/admin/office-location")
 //       .then((res) => {
 //         if (res.data.length) setLocation(res.data[0]);
 //       })
@@ -32,7 +32,7 @@
 //   const handleSave = async () => {
 //   setLoading(true);
 //   try {
-//     await axios.post("http://localhost:8000/admin/office-location", location);
+//     await axios.post("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/admin/office-location", location);
 
 //     // ✅ Use a built-in alert OR SweetAlert if available
 //     alert("Office location saved successfully!");
@@ -365,7 +365,7 @@ function OfficeLocationSetup() {
   // ✅ Fetch existing office location
   useEffect(() => {
     axios
-      .get("http://localhost:8000/admin/office-location")
+      .get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/admin/office-location")
       .then((res) => {
         if (res.data.length) setLocation(res.data[0]);
       })
@@ -426,7 +426,7 @@ function OfficeLocationSetup() {
     setLoading(true);
 
     axios
-      .post("http://localhost:8000/admin/office-location", editLocation)
+      .post("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/admin/office-location", editLocation)
       .then(() => {
         setLocation(editLocation); // ✅ Update page only now
         alert("Office location saved");
@@ -589,7 +589,7 @@ function OfficeLocationSetup() {
           {/* ✅ Readonly Display Section */}
           <div className="row g-3">
             <div className="col-md-6">
-              <label className="form-label text-secondary">Office Name:</label>
+              <label className="form-label "  style={{ color: "#3A5FBE" }}>Office Name:</label>
               <input
                 value={location.name}
                 className="form-control bg-light border-0"
@@ -598,7 +598,7 @@ function OfficeLocationSetup() {
             </div>
 
             <div className="col-md-6">
-              <label className="form-label text-secondary">Longitude:</label>
+              <label className="form-label "  style={{ color: "#3A5FBE" }}>Longitude:</label>
               <input
                 value={location.lng}
                 className="form-control bg-light border-0"
@@ -607,7 +607,7 @@ function OfficeLocationSetup() {
             </div>
 
             <div className="col-md-6">
-              <label className="form-label text-secondary">Latitude:</label>
+              <label className="form-label "  style={{ color: "#3A5FBE" }}>Latitude:</label>
               <input
                 value={location.lat}
                 className="form-control bg-light border-0"
@@ -616,7 +616,7 @@ function OfficeLocationSetup() {
             </div>
 
             <div className="col-md-6">
-              <label className="form-label text-secondary">Address:</label>
+              <label className="form-label"  style={{ color: "#3A5FBE" }}>Address:</label>
               <input
                 value={location.address}
                 className="form-control bg-light border-0"

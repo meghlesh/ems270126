@@ -26,12 +26,12 @@ function ApplyRegularization({ user, selectedRecord }) {
   const [pendingCount, setPendingCount] = useState(0);
   const [workMode, setWorkMode] = useState("");
   const [attendance, setAttendance] = useState([]); // ✅ store attendance data
-const [reason, setReason] = useState("");
+  const [reason, setReason] = useState("");
   // ✅ Function to fetch counts
   const fetchCounts = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/attendance/regularization/my/${user._id}`
+        `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/regularization/my/${user._id}`
       );
 
       const requests = res.data || [];
@@ -65,7 +65,7 @@ const [reason, setReason] = useState("");
     const fetchWeeklyOffs = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/admin/weeklyoff/${new Date().getFullYear()}`
+          `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/admin/weeklyoff/${new Date().getFullYear()}`
         );
 
         const weeklyData = res.data?.data || res.data || {};
@@ -88,7 +88,7 @@ const [reason, setReason] = useState("");
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/attendance/regularization/my/${user._id}`
+        const res = await axios.get(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/regularization/my/${user._id}`
         );
         setAttendance(res.data);
         console.log(res.data)
@@ -233,65 +233,65 @@ const [reason, setReason] = useState("");
       }
 
 
-//       // 🚫 BLOCK REGULARIZATION IF CHECK-IN/CHECK-OUT ALREADY EXISTS FOR THAT DATE
-// const existingAttendance = attendance.find((a) => {
-//     const recordDate = new Date(a.date);
-//     const selectedDate = new Date(date);
+      //       // 🚫 BLOCK REGULARIZATION IF CHECK-IN/CHECK-OUT ALREADY EXISTS FOR THAT DATE
+      // const existingAttendance = attendance.find((a) => {
+      //     const recordDate = new Date(a.date);
+      //     const selectedDate = new Date(date);
 
-//     recordDate.setHours(0, 0, 0, 0);
-//     selectedDate.setHours(0, 0, 0, 0);
+      //     recordDate.setHours(0, 0, 0, 0);
+      //     selectedDate.setHours(0, 0, 0, 0);
 
-//     return recordDate.getTime() === selectedDate.getTime();
-// });
+      //     return recordDate.getTime() === selectedDate.getTime();
+      // });
 
-// // 👉 If employee already checked-in or checked-out for that day
-// if (existingAttendance && (existingAttendance.checkIn || existingAttendance.checkOut)) {
-//     alert("❌ You cannot apply regularization for this date because check-in/check-out is already recorded.");
-//     setMessage("❌ Regularization not allowed because attendance already exists for this date.");
-//     return;
-// }
-//new code
-const existingAttendance = attendance.find((a) => {
-  const recordDate = new Date(a.date);
-  const selectedDate = new Date(date);
+      // // 👉 If employee already checked-in or checked-out for that day
+      // if (existingAttendance && (existingAttendance.checkIn || existingAttendance.checkOut)) {
+      //     alert("❌ You cannot apply regularization for this date because check-in/check-out is already recorded.");
+      //     setMessage("❌ Regularization not allowed because attendance already exists for this date.");
+      //     return;
+      // }
+      //new code
+      const existingAttendance = attendance.find((a) => {
+        const recordDate = new Date(a.date);
+        const selectedDate = new Date(date);
 
-  recordDate.setHours(0, 0, 0, 0);
-  selectedDate.setHours(0, 0, 0, 0);
+        recordDate.setHours(0, 0, 0, 0);
+        selectedDate.setHours(0, 0, 0, 0);
 
-  return recordDate.getTime() === selectedDate.getTime();
-});
+        return recordDate.getTime() === selectedDate.getTime();
+      });
 
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-const selectedDate = new Date(date);
-selectedDate.setHours(0, 0, 0, 0);
-//1) Today + check-in done + no check-out ask to check out first
-if (
-  existingAttendance &&
-  existingAttendance.checkIn &&
-  !existingAttendance.checkOut &&
-  selectedDate.getTime() === today.getTime()
-) {
-  alert("Please check out first before applying regularization for today.");
-  setMessage("Please check out first before applying regularization for today.");
-  return;
-}
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const selectedDate = new Date(date);
+      selectedDate.setHours(0, 0, 0, 0);
+      //1) Today + check-in done + no check-out ask to check out first
+      if (
+        existingAttendance &&
+        existingAttendance.checkIn &&
+        !existingAttendance.checkOut &&
+        selectedDate.getTime() === today.getTime()
+      ) {
+        alert("Please check out first before applying regularization for today.");
+        setMessage("Please check out first before applying regularization for today.");
+        return;
+      }
 
-// 2) Full attendance (both check-in and check-out) block regularization
-if (
-  existingAttendance &&
-  existingAttendance.checkIn &&
-  existingAttendance.checkOut
-) {
-  alert("You cannot apply regularization for this date because check-in and check-out are already recorded.");
-  setMessage("Regularization not allowed because full attendance already exists for this date.");
-  return;
-}
+      // 2) Full attendance (both check-in and check-out) block regularization
+      if (
+        existingAttendance &&
+        existingAttendance.checkIn &&
+        existingAttendance.checkOut
+      ) {
+        alert("You cannot apply regularization for this date because check-in and check-out are already recorded.");
+        setMessage("Regularization not allowed because full attendance already exists for this date.");
+        return;
+      }
 
 
 
       // 1️⃣ Fetch existing leaves for the employee
-      const leaveRes = await axios.get(`http://localhost:8000/leave/my/${user._id}`);
+      const leaveRes = await axios.get(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/my/${user._id}`);
       const leaves = leaveRes.data || [];
 
       // 🔹 Check if the selected date falls in any leave range
@@ -310,7 +310,7 @@ if (
       }
       // 2️⃣ Fetch holidays dynamically
       const currentYear = new Date().getFullYear();
-      const holidaysRes = await axios.get("http://localhost:8000/getHolidays");
+      const holidaysRes = await axios.get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/getHolidays");
       const holidays = holidaysRes.data.filter(
         (h) => new Date(h.date).getFullYear() === currentYear
       );
@@ -331,7 +331,7 @@ if (
 
       // 3 Fetch existing regularization requests (✅ fixed link)
       const regRes = await axios.get(
-        `http://localhost:8000/attendance/regularization/my/${user._id}`
+        `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/regularization/my/${user._id}`
       );
       const regularizations = regRes.data || [];
 
@@ -355,7 +355,7 @@ if (
       // 3️⃣ If all checks pass → Submit regularization request
       const token = localStorage.getItem("accessToken");
       const authAxios = axios.create({
-        baseURL: "http://localhost:8000",
+        baseURL: "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net",
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -377,13 +377,13 @@ if (
       // setCheckOut("");
       // setMessage("");
       setDate("");
-  setCheckIn("");
-  setCheckOut("");
-  setCheckInTime("");
-  setCheckOutTime("");
-  setWorkMode("");
-  setMessage("");
-  setReason("");
+      setCheckIn("");
+      setCheckOut("");
+      setCheckInTime("");
+      setCheckOutTime("");
+      setWorkMode("");
+      setMessage("");
+      setReason("");
     } catch (err) {
       console.error("Error submitting regularization:", err);
       setMessage(err.response?.data?.error || "❌ Failed to submit request");
@@ -409,7 +409,7 @@ if (
       <h3 className="mb-4" style={{ color: "#3A5FBE", fontSize: "25px" }}>
         Regularization
       </h3>
-      
+
       <style>{`
         .modal-body .btn:focus {
           outline: none;
@@ -546,8 +546,8 @@ if (
 
       {/* 🔹 Apply Button */}
       <button
-      
-           className="btn btn-sm custom-outline-btn"
+
+        className="btn btn-sm custom-outline-btn"
         onClick={() => setShowModal(true)}
       >
         Apply Regularization
@@ -573,13 +573,13 @@ if (
                   // onClick={() => setShowModal(false)}
                   onClick={() => {
                     setShowModal(false);
-                   setDate("");
-  setCheckIn("");
-  setCheckOut("");
-  setCheckInTime("");
-  setCheckOutTime("");
-  setWorkMode("");
-  setMessage("");
+                    setDate("");
+                    setCheckIn("");
+                    setCheckOut("");
+                    setCheckInTime("");
+                    setCheckOutTime("");
+                    setWorkMode("");
+                    setMessage("");
                   }}
                 ></button>
               </div>
@@ -749,27 +749,27 @@ if (
                   <div className="d-flex justify-content-end gap-2">
                     <button
                       type="submit"
-                       className="btn btn-sm custom-outline-btn"
-                                           style={{ backgroundColor: "transparent", color: "#3A5FBE", border: "1px solid #3A5FBE", padding: "10px 28px", fontSize: "14px", fontWeight: "500", borderRadius: "4px" }}
+                      className="btn btn-sm custom-outline-btn"
+                      style={{ backgroundColor: "transparent", color: "#3A5FBE", border: "1px solid #3A5FBE", padding: "10px 28px", fontSize: "14px", fontWeight: "500", borderRadius: "4px" }}
 
                     >
                       Submit
                     </button>
                     <button
                       type="button"
-                       className="btn btn-sm custom-outline-btn"
-                                           style={{ backgroundColor: "transparent", color: "#3A5FBE", border: "1px solid #3A5FBE", padding: "10px 28px", fontSize: "14px", fontWeight: "500", borderRadius: "4px" }}
+                      className="btn btn-sm custom-outline-btn"
+                      style={{ backgroundColor: "transparent", color: "#3A5FBE", border: "1px solid #3A5FBE", padding: "10px 28px", fontSize: "14px", fontWeight: "500", borderRadius: "4px" }}
 
                       //onClick={() => setShowModal(false)}
                       onClick={() => {
                         setShowModal(false);
-                       setDate("");
-  setCheckIn("");
-  setCheckOut("");
-  setCheckInTime("");
-  setCheckOutTime("");
-  setWorkMode("");
-  setMessage("");
+                        setDate("");
+                        setCheckIn("");
+                        setCheckOut("");
+                        setCheckInTime("");
+                        setCheckOutTime("");
+                        setWorkMode("");
+                        setMessage("");
                       }}
                     >
                       Cancel

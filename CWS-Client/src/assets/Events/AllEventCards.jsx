@@ -17,7 +17,7 @@ function AllEventsCards() {
       try {
         const token = localStorage.getItem("accessToken"); // Auth token if required
         const res = await axios.get(
-          "http://localhost:8000/events-for-employee",
+          "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/events-for-employee",
           {
             headers: {
               Authorization: `Bearer ${token}`,

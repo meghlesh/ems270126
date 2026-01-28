@@ -29,7 +29,7 @@
 
 //     try {
 //       const token = localStorage.getItem("accessToken");
-//       await axios.delete(`http://localhost:8000/soft/deleteEmployee/${id}`, {
+//       await axios.delete(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/soft/deleteEmployee/${id}`, {
 //         headers: { Authorization: `Bearer ${token}` },
 //       });
 
@@ -50,7 +50,7 @@
 
 //   //   try {
 //   //     const token = localStorage.getItem("accessToken");
-//   //     const res = await axios.delete(` http://localhost:8000/deleteEmployee/${id}`, {
+//   //     const res = await axios.delete(` https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/deleteEmployee/${id}`, {
 //   //       headers: { Authorization: `Bearer ${token}` },
 //   //     });
 
@@ -78,7 +78,7 @@
 
 //   try {
 //     const token = localStorage.getItem("accessToken");
-//     const res = await axios.delete(`http://localhost:8000/deleteEmployee/${id}`, {
+//     const res = await axios.delete(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/deleteEmployee/${id}`, {
 //       headers: { Authorization: `Bearer ${token}` },
 //     });
 
@@ -108,7 +108,7 @@
 //     const fetchEmployees = async () => {
 //       try {
 //         const token = localStorage.getItem("accessToken");
-//         const res = await axios.get("http://localhost:8000/getAllEmployees", {
+//         const res = await axios.get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/getAllEmployees", {
 //           headers: { Authorization: `Bearer ${token}` },
 //         });
 //         setEmployees(res.data || []);
@@ -142,7 +142,7 @@
 //     try {
 //       const token = localStorage.getItem("accessToken");
 //       await axios.put(
-//         `http://localhost:8000/users/${selectedEmployee._id}/assign-manager`,
+//         `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/users/${selectedEmployee._id}/assign-manager`,
 //         { managerId: selectedManagerId },
 //         { headers: { Authorization: `Bearer ${token}` } }
 //       );
@@ -224,12 +224,12 @@
 //         <table className="table table-hover mb-0" style={{ borderCollapse: "collapse" }}>
 //           <thead style={{ backgroundColor: "#f8f9fa" }}>
 //             <tr>
-//               <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Name</th>
-//               <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Email</th>
-//               <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Department</th>
-//               <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Position</th>
-//               <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Date Of Joining</th>
-//               <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Action</th>
+//               <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Name</th>
+//               <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Email</th>
+//               <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Department</th>
+//               <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Position</th>
+//               <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Date Of Joining</th>
+//               <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px' }}>Action</th>
 //             </tr>
 //           </thead>
 //           <tbody>
@@ -516,7 +516,7 @@ function AllEmployeeDetails() {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.delete(`http://localhost:8000/soft/deleteEmployee/${id}`, {
+      await axios.delete(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/soft/deleteEmployee/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -543,7 +543,7 @@ function AllEmployeeDetails() {
 
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await axios.delete(`http://localhost:8000/deleteEmployee/${id}`, {
+      const res = await axios.delete(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/deleteEmployee/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -570,7 +570,7 @@ function AllEmployeeDetails() {
     const fetchEmployees = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        const res = await axios.get("http://localhost:8000/getAllEmployees", {
+        const res = await axios.get("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/getAllEmployees", {
           headers: { Authorization: `Bearer ${token}` },
         });
         //Geetanjali
@@ -623,7 +623,7 @@ function AllEmployeeDetails() {
     try {
       const token = localStorage.getItem("accessToken");
       await axios.put(
-        `http://localhost:8000/users/${selectedEmployee._id}/assign-manager`,
+        `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/users/${selectedEmployee._id}/assign-manager`,
         { managerId: selectedManagerId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -798,7 +798,7 @@ function AllEmployeeDetails() {
         </style>
 
         <div className="fg-row">
-          <label className="fg-label">Search by Name</label>
+          <label className="fg-label">Search by Any Field</label>
           <input
             type="text"
             className="fg-input"
@@ -843,13 +843,13 @@ function AllEmployeeDetails() {
         <table className="table table-hover mb-0">
           <thead style={{ backgroundColor: "#f8f9fa" }}>
             <tr>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>ID</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Name</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Email</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Department</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }} >Position</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Date Of Joining</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Action</th>
+              <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>ID</th>
+              <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Name</th>
+              <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Email</th>
+              <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Department</th>
+              <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }} >Position</th>
+              <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Date Of Joining</th>
+              <th style={{ fontWeight: '600', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Action</th>
             </tr>
           </thead>
 

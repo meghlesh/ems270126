@@ -37,7 +37,7 @@ function AddHolidayForm({ onAdd }) {
     try {
       const token = localStorage.getItem("accessToken");
       const res = await axios.post(
-        "http://localhost:8000/holidays",
+        "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/holidays",
         { name, date },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -55,7 +55,7 @@ function ChangePassword() {
       const accessToken = localStorage.getItem("accessToken"); // from your login response
 
       const res = await axios.post(
-        "http://localhost:8000/change-password",
+        "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/change-password",
         {
           currentPassword,
           newPassword,
@@ -92,7 +92,7 @@ function ChangePassword() {
         style={{ maxWidth: "1200px", margin: "0 auto" }}
       >
         <div className="card-body">
-          <h6 className="fw-bold text-primary mb-3">Change Password</h6>
+          <h6 className="fw-bold  mb-3"  style={{ color: "#3A5FBE" }}>Change Password</h6>
 
           {passwordError && (
             <div className="alert alert-danger py-2">{passwordError}</div>
@@ -103,7 +103,7 @@ function ChangePassword() {
           )}
 
           <div className="mb-3">
-            <label className="form-label text-primary">Current Password</label>
+            <label className="form-label " style={{ color: "#3A5FBE" }}>Current Password</label>
             <div style={{ position: "relative" }}>
               <input
                 type={showPassword.current ? "text" : "password"}
@@ -133,7 +133,7 @@ function ChangePassword() {
 
           {/* New Password Field */}
           <div className="mb-3">
-            <label className="form-label text-primary">New Password</label>
+            <label className="form-label " style={{ color: "#3A5FBE" }}>New Password</label>
             <div style={{ position: "relative" }}>
               <input
                 type={showPassword.new ? "text" : "password"}
@@ -162,7 +162,7 @@ function ChangePassword() {
           </div>
 
           <div className="mb-3">
-            <label className="form-label text-primary">Confirm Password</label>
+            <label className="form-label" style={{ color: "#3A5FBE" }}>Confirm Password</label>
             <div style={{ position: "relative" }}>
               <input
                 type={showPassword.confirm ? "text" : "password"}

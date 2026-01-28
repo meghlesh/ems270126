@@ -1,29 +1,29 @@
+
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
-function TodaysEmployeeDetails() {
+function ManagerAssignedEmployeesAttendance() {
   const [attendanceData, setAttendanceData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { role, username, id } = useParams();
+  const { role, username, id } = useParams(); // 👈 id = managerId
   const navigate = useNavigate();
 
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  // NEW: Status filter state 
   const [statusFilter, setStatusFilter] = useState("All");
   const [employeeNameFilter, setEmployeeNameFilter] = useState("");
   const [filteredEmployees, setFilteredEmployees] = useState([]);
 
-  // ✅ Summary counts
   const [summary, setSummary] = useState({
     present: 0,
     absent: 0,
     lateCheckIn: 0,
-  })
+  });
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -31,11 +31,14 @@ function TodaysEmployeeDetails() {
         setLoading(true);
         const token = localStorage.getItem("accessToken");
         const authAxios = axios.create({
-          baseURL: " https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net",
+          baseURL: "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net", // ❌ removed leading space
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const res = await authAxios.get("/attendance/today");
+        // 🔁 CHANGED: call manager-specific today's API
+        const res = await authAxios.get(`/attendance/manager/${id}/today`);
+
+        // res.data is { employees: [...] }
         const employees = res.data?.employees || [];
 
         // ✅ Calculate counts
@@ -52,7 +55,7 @@ function TodaysEmployeeDetails() {
           } else {
             present++;
 
-            // Check if late check-in (>= 10:00 AM)
+            // Late check-in (after 10:00 am)
             if (checkIn) {
               const hours = checkIn.getHours();
               const minutes = checkIn.getMinutes();
@@ -64,7 +67,7 @@ function TodaysEmployeeDetails() {
         });
 
         setSummary({ present, absent, lateCheckIn });
-        setAttendanceData(res.data);
+        setAttendanceData(res.data); // { employees: [...] }
       } catch (err) {
         console.error(err);
         setError("Failed to fetch today's attendance.");
@@ -74,7 +77,8 @@ function TodaysEmployeeDetails() {
     };
 
     fetchAttendance();
-  }, []);
+  }, [id]); // 👈 depends on manager id
+
   useEffect(() => {
     if (attendanceData?.employees) {
       setFilteredEmployees(attendanceData.employees);
@@ -87,21 +91,7 @@ function TodaysEmployeeDetails() {
     return diffHrs.toFixed(2);
   };
 
-//shivani
-// const focusStyles = {
-//   onFocus: (e) => {
-//     e.target.style.backgroundColor = "#3A5FBE";
-//     e.target.style.color = "white";
-//     e.target.style.border = "1px solid #3A5FBE";
-//   },
-//   onBlur: (e) => {
-//     e.target.style.backgroundColor = "transparent";
-//     e.target.style.color = "#3A5FBE";
-//     e.target.style.border = "1px solid #3A5FBE";
-//   }
-// };
-
-
+  // ✅ Get employee status
   const getStatus = (checkIn, checkOut, workingHours) => {
     if (!checkIn && !checkOut) return "Absent";
     if (checkIn && !checkOut) return "Working";
@@ -110,98 +100,64 @@ function TodaysEmployeeDetails() {
     return "Absent";
   };
 
-  if (loading) return <div
-    className="d-flex flex-column justify-content-center align-items-center"
-    style={{ minHeight: "100vh" }}
-  >
-    <div
-      className="spinner-grow"
-      role="status"
-      style={{ width: "4rem", height: "4rem", color: "#3A5FBE" }}
-    >
-      <span className="visually-hidden">Loading...</span>
-    </div>
-    <p className="mt-3 fw-semibold" style={{ color: "#3A5FBE" }}>Loading ...</p>
-  </div>;
-
-  if (error) return <p className="text-danger">{error}</p>;
-  if (!attendanceData?.employees?.length)
-    return <p>No attendance records for today.</p>;
-
-  const employees = attendanceData.employees;
-  // const totalPages = Math.ceil(employees.length / itemsPerPage);
-  // const indexOfLastItem = currentPage * itemsPerPage;
-  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  // const currentEmployees = employees.slice(indexOfFirstItem, indexOfLastItem);
-
-  // const handlePageChange = (newPage) => {
-  //   if (newPage >= 1 && newPage <= totalPages) {
-  //     setCurrentPage(newPage);
-  //   }
-  // };
-
-  // dipali code 
-  // NEW: Filter employees by status
+  // ✅ Apply Filters (Status + Name)
   const applyFilters = () => {
-    const employeesList = attendanceData?.employees || [];
-    let temp = [...employeesList];
+    let temp = [...(attendanceData?.employees || [])];
 
-    // Status filter
+    // Status Filter
     if (statusFilter !== "All") {
       temp = temp.filter((emp) => {
-        const checkIn = emp.checkInTime;
-        const checkOut = emp.checkOutTime;
-        const workingHours = calculateWorkingHours(checkIn, checkOut);
-        const status = getStatus(checkIn, checkOut, workingHours);
-        if (statusFilter === "Late Check-In") {
-          // Late check-in: Present AND after 10:00 am
-          if (checkIn) {
-            const dt = new Date(checkIn);
-            const hours = dt.getHours();
-            const minutes = dt.getMinutes();
-            return (
-              (status === "Present" || status === "Half Day" || status === "Working") &&
-              (hours > 10 || (hours === 10 && minutes > 0))
-            );
-          }
-          return false;
-        } else {
-          return status === statusFilter;
-        }
+        const workingHours = calculateWorkingHours(
+          emp.checkInTime,
+          emp.checkOutTime
+        );
+        const status = getStatus(
+          emp.checkInTime,
+          emp.checkOutTime,
+          workingHours
+        );
+        return status === statusFilter;
       });
     }
-    // Name filter
+
+    // Name Filter
     if (employeeNameFilter.trim() !== "") {
       temp = temp.filter((emp) =>
-        emp.name.toLowerCase().includes(employeeNameFilter.trim().toLowerCase())
+        emp.name
+          .toLowerCase()
+          .includes(employeeNameFilter.trim().toLowerCase())
       );
     }
 
     setFilteredEmployees(temp);
-    setCurrentPage(1); // reset to first page
+    setCurrentPage(1);
   };
 
-  // CHANGED: Use filteredEmployees instead of employees for pagination
+  // ✅ Pagination Calculations (THIS FIXES YOUR ERROR)
   const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentEmployees = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
 
+  // ✅ THIS WAS MISSING – CAUSING YOUR CRASH
+  const currentEmployees = filteredEmployees.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
+  // ✅ Page Change Handler
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
   };
 
-  console.log("currentEmployees", currentEmployees)
 
   return (
-    <div className="p-2 max-w-6xl mx-auto">
+   <div className="p-2 max-w-6xl mx-auto">
       <h2 className="text-xl font-bold mb-4" style={{ color: "#3A5FBE", fontSize: "25px" }}>Today's Attendance Details</h2>
 
-      {/* ✅ Summary Cards */}
-      <div className="row mb-4">
+      {/* Summary Cards */}
+      <div className="row  mb-4">
         <div className="col-md-4 mb-3">
           <div className="card shadow-sm h-100 border-0">
             <div className="card-body d-flex align-items-center" style={{ gap: "20px" }}>
@@ -212,44 +168,21 @@ function TodaysEmployeeDetails() {
                   backgroundColor: "#D7F5E4",
                   padding: "10px",
                   textAlign: "center",
-                  minWidth: "75px",      // Fixed minimum width
-                  minHeight: "75px",     // Fixed minimum height
-                  display: "flex",       // Center content
-                  alignItems: "center",  // Center vertically
-                  justifyContent: "center", // Center horizontally
+                  minWidth: "75px",
+                  minHeight: "75px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 {summary.present}
               </h4>
+
               <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
                 Total Present Employees
               </p>
-            </div>
-          </div>
-        </div>
 
-        <div className="col-md-4 mb-3">
-          <div className="card shadow-sm h-100 border-0">
-            <div className="card-body d-flex  align-items-center" style={{ gap: "20px" }}>
-              <h4
-                className="mb-0"
-                style={{
-                  fontSize: "40px",
-                  backgroundColor: "#F8D7DA",
-                  padding: "10px",
-                  textAlign: "center",
-                  minWidth: "75px",      // Fixed minimum width
-                  minHeight: "75px",     // Fixed minimum height
-                  display: "flex",       // Center content
-                  alignItems: "center",  // Center vertically
-                  justifyContent: "center", // Center horizontally
-                }}
-              >
-                {summary.absent}
-              </h4>
-              <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
-                Total Absent Employees
-              </p>
+
             </div>
           </div>
         </div>
@@ -257,34 +190,63 @@ function TodaysEmployeeDetails() {
         <div className="col-md-4 mb-3">
           <div className="card shadow-sm h-100 border-0">
             <div className="card-body d-flex align-items-center" style={{ gap: "20px" }}>
-              <h4
+              <div
+                className="mb-0"
+                style={{
+                  fontSize: "40px",
+                  backgroundColor: "#F8D7DA",
+                  padding: "10px",
+                  textAlign: "center",
+                  minWidth: "75px",
+                  minHeight: "75px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {summary.absent}
+              </div>
+
+              <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
+                Absent Employees
+              </p>
+
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-4 mb-3">
+          <div className="card shadow-sm h-100 border-0">
+            <div className="card-body d-flex align-items-center" style={{ gap: "20px" }}>
+              <div
                 className="mb-0"
                 style={{
                   fontSize: "40px",
                   backgroundColor: "#FFE493",
                   padding: "10px",
                   textAlign: "center",
-                  minWidth: "75px",      // Fixed minimum width
-                  minHeight: "75px",     // Fixed minimum height
-                  display: "flex",       // Center content
-                  alignItems: "center",  // Center vertically
-                  justifyContent: "center", // Center horizontally
+                  minWidth: "75px",
+                  minHeight: "75px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 {summary.lateCheckIn}
-              </h4>
-              <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
-                Late Check-In
-              </p>
+              </div>
+              <div>
+                <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
+                  Late Check-Ins
+                </p>
+
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-
-
-      {/* dipali code */}
-      <div className="card mb-4 shadow-sm border-0">
+      {/* Filters Card */}
+          <div className="card mb-4 shadow-sm border-0">
         <div className="card-body">
           <form
             className="row g-2 align-items-center"
@@ -294,8 +256,8 @@ function TodaysEmployeeDetails() {
             }}
           >
             {/* Status Filter */}
-    <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
-              <label htmlFor="statusFilter" className="fw-bold mb-0 text-start text-md-end" style={{ width: "55px", fontSize: "16px", color: "#3A5FBE" }}>Status</label>
+            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
+              <label htmlFor="statusFilter" className="fw-bold mb-0" style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}>Status</label>
               <select
                 id="statusFilter"
                 className="form-select"
@@ -311,10 +273,9 @@ function TodaysEmployeeDetails() {
               </select>
 
             </div>
-
             {/* Name Filter */}
-                <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
-              <label htmlFor="employeeNameFilter" className="fw-bold mb-0 text-start text-md-end" style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" ,marginRight:"2px"}}>Name</label>
+            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
+              <label htmlFor="employeeNameFilter" className="fw-bold mb-0" style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}>Name</label>
               <input
                 id="employeeNameFilter"
                 type="text"
@@ -324,7 +285,6 @@ function TodaysEmployeeDetails() {
                 placeholder="Employee name"
               />
             </div>
-
             <>
             </>
 
@@ -353,8 +313,9 @@ function TodaysEmployeeDetails() {
         </div>
       </div>
 
-      {/* ✅ Attendance Table */}
-      <div className="table-responsive">
+
+      {/* Attendance Table */}
+ <div className="table-responsive">
         <table className="table table-hover mb-0 bg-white">
           <thead style={{ backgroundColor: "#ffffffff" }}>
             <tr>
@@ -434,7 +395,9 @@ function TodaysEmployeeDetails() {
           </tbody>
         </table>
       </div>
-      {/* ✅ Pagination */}
+
+
+       {/* ✅ Pagination */}
       <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center">
@@ -486,7 +449,11 @@ function TodaysEmployeeDetails() {
         </button>
       </div>
     </div>
+   
   );
+
+
 }
 
-export default TodaysEmployeeDetails;
+
+export default ManagerAssignedEmployeesAttendance;

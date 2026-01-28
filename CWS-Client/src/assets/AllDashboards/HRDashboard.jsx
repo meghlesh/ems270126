@@ -23,7 +23,7 @@ function HRDashboard({ user }) {
       try {
         const token = localStorage.getItem("accessToken");
         const authAxios = axios.create({
-          baseURL: "http://localhost:8000",
+          baseURL: "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net",
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -63,7 +63,24 @@ function HRDashboard({ user }) {
   }, [user]);
 
   // if (loading) return <p>Loading...</p>;
-   <div
+  <div
+    className="d-flex flex-column justify-content-center align-items-center"
+    style={{ minHeight: "100vh" }}
+  >
+    <div
+      className="spinner-grow"
+      role="status"
+      style={{ width: "4rem", height: "4rem", color: "#3A5FBE" }}
+    >
+      <span className="visually-hidden">Loading...</span>
+    </div>
+    <p className="mt-3 fw-semibold" style={{ color: "#3A5FBE" }}>Loading ...</p>
+  </div>
+
+
+  if (loading) {
+    return (
+      <div
         className="d-flex flex-column justify-content-center align-items-center"
         style={{ minHeight: "100vh" }}
       >
@@ -74,29 +91,12 @@ function HRDashboard({ user }) {
         >
           <span className="visually-hidden">Loading...</span>
         </div>
-        <p className="mt-3 fw-semibold" style={{ color: "#3A5FBE" }}>Loading ...</p>
+        <p className="mt-3 fw-semibold" style={{ color: "#3A5FBE" }}>
+          Loading ...
+        </p>
       </div>
-
-
-if (loading) {
-  return (
-    <div
-      className="d-flex flex-column justify-content-center align-items-center"
-      style={{ minHeight: "100vh" }}
-    >
-      <div
-        className="spinner-grow"
-        role="status"
-        style={{ width: "4rem", height: "4rem", color: "#3A5FBE" }}
-      >
-        <span className="visually-hidden">Loading...</span>
-      </div>
-      <p className="mt-3 fw-semibold" style={{ color: "#3A5FBE" }}>
-        Loading ...
-      </p>
-    </div>
-  );
-}
+    );
+  }
 
 
   const checkedInCount =
@@ -133,8 +133,8 @@ if (loading) {
     })
     .flat()
     .sort((a, b) => a.date - b.date);
-console.log("employees:", employees);
-console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
+  console.log("employees:", employees);
+  console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
   return (
     <div className="container-fluid pt-1 px-3" style={{ marginTop: "-25px" }}>
       {/* ================= Summary Cards ================= */}
@@ -145,21 +145,23 @@ console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
             <div className="col-md-6 mt-3">
               <div className="card shadow-sm h-100">
                 <div className="card-body d-flex justify-content-between align-items-center">
-                  <div style={{ backgroundColor: "#D7F5E4", padding: "10px",
-                  textAlign: "center",
-                  minWidth: "75px",
-                  minHeight: "75px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center" }}>
+                  <div style={{
+                    backgroundColor: "#D7F5E4", padding: "10px",
+                    textAlign: "center",
+                    minWidth: "75px",
+                    minHeight: "75px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}>
                     <h4 className="text-success mb-0" style={{ fontSize: "40px" }}>{employees.length}</h4>
                   </div>
                   <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
                     <span style={{ marginLeft: "20px", display: "inline-block" }}>Total</span><br />
                     Employees
                   </p>                  <button
-                    className="btn btn-sm btn-outline"
-                    style={{color: "#3A5FBE",borderColor: "#3A5FBE"}}
+                    className="btn btn-sm custom-outline-btn"
+                   
                     onClick={() => navigate(`/dashboard/${role}/${username}/${id}/allemployeedetails`)}
                   >
                     View
@@ -173,20 +175,22 @@ console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
               {/* onClick={() => navigate(`/dashboard/${role}/${username}/${id}/leavebalance`)} */}
               <div className="card shadow-sm h-100" >
                 <div className="card-body d-flex justify-content-between align-items-center">
-                  <div style={{ backgroundColor: "#FFE493", padding: "10px",
-                  textAlign: "center",
-                  minWidth: "75px",
-                  minHeight: "75px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"}}>
+                  <div style={{
+                    backgroundColor: "#FFE493", padding: "10px",
+                    textAlign: "center",
+                    minWidth: "75px",
+                    minHeight: "75px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}>
                     <h4 className="text-success mb-0" style={{ fontSize: "40px" }}>{pendingLeaves.length}</h4>
                   </div>
                   <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
                     <span style={{ marginLeft: "30px", display: "inline-block" }}>Pending </span><br />Leave Requests</p>
                   <button
-                  className="btn btn-sm btn-outline"
-                    style={{color: "#3A5FBE",borderColor: "#3A5FBE"}}
+                    className="btn btn-sm custom-outline-btn"
+                    style={{ color: "#3A5FBE", borderColor: "#3A5FBE" }}
                     onClick={(e) => {
                       e.stopPropagation(); // prevent card click event from firing
                       navigate(`/dashboard/${role}/${username}/${id}/hr-leavebalance`);
@@ -202,20 +206,22 @@ console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
             <div className="col-md-6">
               <div className="card shadow-sm h-100">
                 <div className="card-body d-flex justify-content-between align-items-center">
-                  <div style={{ backgroundColor: "#FFE493",padding: "10px",
-                  textAlign: "center",
-                  minWidth: "75px",
-                  minHeight: "75px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"}}>
+                  <div style={{
+                    backgroundColor: "#FFE493", padding: "10px",
+                    textAlign: "center",
+                    minWidth: "75px",
+                    minHeight: "75px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}>
                     <h4 className="text-success mb-0" style={{ fontSize: "40px" }}>{pendingRegularizations.length}</h4>
                   </div>
                   <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
                     <span style={{ marginLeft: "10px", display: "inline-block" }}>Attendance</span> <br />Regularization</p>
                   <button
-                  className="btn btn-sm btn-outline"
-                    style={{color: "#3A5FBE",borderColor: "#3A5FBE"}}
+                    className="btn btn-sm custom-outline-btn"
+                    style={{ color: "#3A5FBE", borderColor: "#3A5FBE" }}
                     onClick={() => navigate(`/dashboard/${role}/${username}/${id}/hr-employee-regularization`)}
                   >
                     View
@@ -228,20 +234,22 @@ console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
             <div className="col-md-6">
               <div className="card shadow-sm h-100">
                 <div className="card-body d-flex justify-content-between align-items-center">
-                  <div style={{ backgroundColor: "#D7F5E4", padding: "10px",
-                  textAlign: "center",
-                  minWidth: "75px",
-                  minHeight: "75px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center" }}>
+                  <div style={{
+                    backgroundColor: "#D7F5E4", padding: "10px",
+                    textAlign: "center",
+                    minWidth: "75px",
+                    minHeight: "75px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}>
                     <h4 className="text-success mb-0" style={{ fontSize: "40px" }}>{checkedInCount}</h4>
                   </div>
                   <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
                     <span style={{ marginLeft: "20px", display: "inline-block" }}>Today's </span><br /> Attendance</p>
                   <button
-                   className="btn btn-sm btn-outline"
-                    style={{color: "#3A5FBE",borderColor: "#3A5FBE"}}
+                    className="btn btn-sm custom-outline-btn"
+                    style={{ color: "#3A5FBE", borderColor: "#3A5FBE" }}
                     onClick={() => navigate(`/dashboard/${role}/${username}/${id}/TodaysAttendanceDetails`)}
                   >
                     View
@@ -263,11 +271,11 @@ console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
         {/* Recent Employees */}
         <div className="col-md-4">
           <div className="card shadow-sm h-100">
-            <div className="card-header d-flex justify-content-between align-items-center"  style={{backgroundColor:"#fff"}}>
+            <div className="card-header d-flex justify-content-between align-items-center" style={{ backgroundColor: "#fff" }}>
               <h6 className="mb-0" style={{ color: "#3A5FBE" }}>Recent Employee Registration</h6>
               <button
-                className="btn btn-sm btn-outline"
-                    style={{color: "#3A5FBE",borderColor: "#3A5FBE"}}
+                className="btn btn-sm custom-outline-btn"
+                style={{ color: "#3A5FBE", borderColor: "#3A5FBE" }}
                 onClick={() => navigate(`/dashboard/${role}/${username}/${id}/allemployeedetails`)}
               >
                 View All
@@ -275,29 +283,29 @@ console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
             </div>
             <div className="card-body p-0">
               <div className="table-responsive">
-              <table className="table table-hover mb-0">
-                <thead  style={{backgroundColor:"#fff"}}>
-                  <tr>
-                    <th style={{ fontWeight: '500', fontSize: '14px', width: '130px' }}>Name</th>
-                    <th style={{ fontWeight: '500', fontSize: '14px' }}>Position</th>
-                    <th style={{ fontWeight: '500', fontSize: '14px'}}>Department</th>
-                    <th style={{ fontWeight: '500', fontSize: '14px', width: '130px' }}>DOJ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                 {mergedEmployees
-                  .filter(emp => emp && emp.name && emp.designation && emp.department && emp.doj)
-                  .slice(0, 3)
-                  .map(emp => (
-                    <tr key={emp._id}>
-                      <td className="text-capitalize" style={{ fontWeight: '400', fontSize: '14px'}}>{emp.name}</td>
-                      <td style={{ fontWeight: '400', fontSize: '14px'}}>{emp.designation}</td>
-                      <td style={{ fontWeight: '400', fontSize: '14px'}}>{emp.department}</td>
-                      <td style={{ fontWeight: '400', fontSize: '14px'}}>{new Date(emp.doj).toLocaleDateString("en-GB")}</td>
+                <table className="table table-hover mb-0">
+                  <thead style={{ backgroundColor: "#fff" }}>
+                    <tr>
+                      <th style={{ fontWeight: '600', fontSize: '14px', width: '130px' }}>Name</th>
+                      <th style={{ fontWeight: '600', fontSize: '14px' }}>Position</th>
+                      <th style={{ fontWeight: '600', fontSize: '14px' }}>Department</th>
+                      <th style={{ fontWeight: '600', fontSize: '14px', width: '130px' }}>DOJ</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {mergedEmployees
+                      .filter(emp => emp && emp.name && emp.designation && emp.department && emp.doj)
+                      .slice(0, 3)
+                      .map(emp => (
+                        <tr key={emp._id}>
+                          <td className="text-capitalize" style={{ fontWeight: '400', fontSize: '14px' }}>{emp.name}</td>
+                          <td style={{ fontWeight: '400', fontSize: '14px' }}>{emp.designation}</td>
+                          <td style={{ fontWeight: '400', fontSize: '14px' }}>{emp.department}</td>
+                          <td style={{ fontWeight: '400', fontSize: '14px' }}>{new Date(emp.doj).toLocaleDateString("en-GB")}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -306,11 +314,11 @@ console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
         {/* Leave & Regularization */}
         <div className="col-md-4">
           <div className="card shadow-sm h-100" >
-            <div className="card-header d-flex justify-content-between align-items-center"  style={{backgroundColor:"#fff"}}>
+            <div className="card-header d-flex justify-content-between align-items-center" style={{ backgroundColor: "#fff" }}>
               <h6 className="mb-0" style={{ color: "#3A5FBE" }}>Leave & Regularization Requests</h6>
               <button
-                className="btn btn-sm btn-outline"
-                    style={{color: "#3A5FBE",borderColor: "#3A5FBE"}}
+                className="btn btn-sm custom-outline-btn"
+                style={{ color: "#3A5FBE", borderColor: "#3A5FBE" }}
                 onClick={() => navigate(`/dashboard/${role}/${username}/${id}/allRequest`)}
               >
                 View All
@@ -318,34 +326,34 @@ console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
             </div>
             <div className="card-body p-0">
               <div className="table-responsive">
-              <table className="table table-hover mb-0">
-                <thead  style={{backgroundColor:"#fff"}}>
-                  <tr>
-                    <th style={{ fontWeight: '500', fontSize: '14px' }}>Employee</th>
-                    <th style={{ fontWeight: '500', fontSize: '14px'}}>Type</th>
-                    <th style={{ width: "150px", whiteSpace: "nowrap", fontWeight: '500', fontSize: '14px' }}>Date</th>
-                    <th style={{ fontWeight: '500', fontSize: '14px' }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allRequests.slice(0, 3).map((req, i) => {
-                    const type = req.type;
-                    const status =
-                      type === "Leave"
-                        ? req.status || "Pending"
-                        : req.regularizationRequest?.status || "Pending";
+                <table className="table table-hover mb-0">
+                  <thead style={{ backgroundColor: "#fff" }}>
+                    <tr>
+                      <th style={{ fontWeight: '600', fontSize: '14px' }}>Employee</th>
+                      <th style={{ fontWeight: '600', fontSize: '14px' }}>Type</th>
+                      <th style={{ width: "150px", whiteSpace: "nowrap", fontWeight: '600', fontSize: '14px' }}>Date</th>
+                      <th style={{ fontWeight: '600', fontSize: '14px' }}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allRequests.slice(0, 3).map((req, i) => {
+                      const type = req.type;
+                      const status =
+                        type === "Leave"
+                          ? req.status || "Pending"
+                          : req.regularizationRequest?.status || "Pending";
 
-                    const formatted =
-                      type === "Leave"
-                        ? `${new Date(req.dateFrom).toLocaleDateString()} - ${new Date(req.dateTo).toLocaleDateString()}`
-                        : new Date(req.date).toLocaleDateString();
+                      const formatted =
+                        type === "Leave"
+                          ? `${new Date(req.dateFrom).toLocaleDateString()} - ${new Date(req.dateTo).toLocaleDateString()}`
+                          : new Date(req.date).toLocaleDateString();
 
-                    return (
-                      <tr key={i}>
-                        <td className="text-capitalize" style={{ fontWeight: '400', fontSize: '14px'}}>{req.employee?.name || "N/A"}</td>
-                        <td style={{ fontWeight: '400', fontSize: '14px'}}>{type}</td>
-                        <td style={{ fontWeight: '400', fontSize: '14px'}}>{formatted}</td>
-                        {/* <td style={{ fontWeight: '400', fontSize: '14px'}}>
+                      return (
+                        <tr key={i}>
+                          <td className="text-capitalize" style={{ fontWeight: '400', fontSize: '14px' }}>{req.employee?.name || "N/A"}</td>
+                          <td style={{ fontWeight: '400', fontSize: '14px' }}>{type}</td>
+                          <td style={{ fontWeight: '400', fontSize: '14px' }}>{formatted}</td>
+                          {/* <td style={{ fontWeight: '400', fontSize: '14px'}}>
                           <span
                             className={`badge ${status.toLowerCase() === "approved"
                                 ? "#d1f2dd"
@@ -357,28 +365,28 @@ console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
                             {status.charAt(0).toUpperCase()+status.slice(1).toLowerCase()}
                           </span>
                         </td> */}
-                        <td style={{ fontWeight: '400', fontSize: '14px' }}>
-  <span
-    className="badge text-dark"
-    style={{
-      backgroundColor:
-        status?.toLowerCase() === "approved"
-          ? "#d1f2dd"     // green
-          : status?.toLowerCase() === "rejected"
-            ? "#f8d7da"  // yellow
-            : "#FFE493", // pending or other
-      fontWeight: "500"
-    }}
-  >
-    {status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()}
-  </span>
-</td>
+                          <td style={{ fontWeight: '400', fontSize: '14px' }}>
+                            <span
+                              className="badge text-dark"
+                              style={{
+                                backgroundColor:
+                                  status?.toLowerCase() === "approved"
+                                    ? "#d1f2dd"     // green
+                                    : status?.toLowerCase() === "rejected"
+                                      ? "#f8d7da"  // yellow
+                                      : "#FFE493", // pending or other
+                                fontWeight: "600"
+                              }}
+                            >
+                              {status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()}
+                            </span>
+                          </td>
 
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -454,26 +462,11 @@ console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
             </div>
           </div> */}
 
-          <EventCard/>
+          <EventCard />
         </div>
       </div>
 
-      <div className="text-end mt-3">
-      <button
-  className="btn btn-outline"
-  style={{ color: "#3A5FBE", borderColor: "#3A5FBE" }}
-  onClick={() => {
-    if (window.history.length > 2) {
-      navigate(-1);   // Go back normally
-    } else {
-      navigate("/dashboard/hr/hr-core-dashboard"); // Fallback direct path
-    }
-  }}
->
-  Back
-</button>
 
-      </div>
     </div>
   );
 }

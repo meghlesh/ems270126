@@ -19,7 +19,7 @@ function MyProfile({ user }) {
       setRemovingImage(true);
 
       const res = await axios.delete(
-        `http://localhost:8000/employees/${user._id}/image`
+        `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/employees/${user._id}/image`
       );
 
       if (res?.data?.employee) {
@@ -47,7 +47,7 @@ function MyProfile({ user }) {
 
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/employees/${user._id}`);
+        const res = await axios.get(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/employees/${user._id}`);
         setProfile(res.data);
         setFormData({
           ...res.data,
@@ -144,7 +144,7 @@ function MyProfile({ user }) {
         }
       });
 
-      await axios.put(`http://localhost:8000/employees/${user._id}`, data, {
+      await axios.put(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/employees/${user._id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -152,7 +152,7 @@ function MyProfile({ user }) {
       setIsEditing(false);
 
       // Refresh profile
-      const updated = await axios.get(`http://localhost:8000/employees/${user._id}`);
+      const updated = await axios.get(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/employees/${user._id}`);
       setProfile(updated.data);
     } catch (err) {
       console.error(err);
@@ -164,7 +164,7 @@ function MyProfile({ user }) {
     if (!file) return "Not uploaded";
     if (file instanceof File) return file.name;
     return (
-      <a href={`http://localhost:8000/uploads/${file}`} target="_blank" rel="noreferrer">
+      <a href={`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/uploads/${file}`} target="_blank" rel="noreferrer">
         View PDF
       </a>
     );
@@ -301,7 +301,7 @@ console.log("formdata",formData)
                   <img
                     src={profile.image?.startsWith("http")
                       ? profile.image
-                      : `http://localhost:8000/image/${profile.image}`}
+                      : `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/image/${profile.image}`}
                     alt="Profile"
                     style={{
                       width: "100px",

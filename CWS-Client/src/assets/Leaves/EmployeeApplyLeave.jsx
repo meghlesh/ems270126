@@ -19,7 +19,7 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
   //   const fetchWeeklyOffs = async () => {
   //     try {
   //       const res = await axios.get(
-  //         `http://localhost:8000/admin/weeklyoff/${new Date().getFullYear()}`
+  //         `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/admin/weeklyoff/${new Date().getFullYear()}`
   //       );
 
   //       // 🛠️ Ensure it's always an array of date strings
@@ -45,7 +45,7 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
     const fetchWeeklyOffs = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/admin/weeklyoff/${new Date().getFullYear()}`
+          `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/admin/weeklyoff/${new Date().getFullYear()}`
         );
 
         // 👇 Extract weekly off data safely
@@ -76,7 +76,7 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
     const fetchManager = async () => {
       if (!user?.reportingManager) return;
       try {
-        const res = await axios.get(`http://localhost:8000/users/${user.reportingManager}`);
+        const res = await axios.get(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/users/${user.reportingManager}`);
         setManager(res.data);
       } catch (err) {
         console.error("Error fetching manager:", err);
@@ -206,7 +206,7 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
 
       // ✅ 1️⃣ Fetch existing leaves of employee
       const existingLeavesRes = await axios.get(
-        `http://localhost:8000/leave/my/${user._id}`
+        `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/my/${user._id}`
       );
       const existingLeaves = existingLeavesRes.data || [];
 
@@ -239,7 +239,7 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
 
 
 
-      await axios.post("http://localhost:8000/leave/apply", {
+      await axios.post("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/apply", {
         employeeId: user._id,
         leaveType: form.leaveType,
         dateFrom: form.dateFrom,

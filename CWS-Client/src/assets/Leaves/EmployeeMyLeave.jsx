@@ -26,7 +26,7 @@ function EmployeeMyLeave({ user, refreshKey }) {
     const fetchLeaves = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/leave/my/${user._id}`
+          `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/my/${user._id}`
         );
 
         console.log("raw leaves from API:", res.data);
@@ -41,7 +41,7 @@ function EmployeeMyLeave({ user, refreshKey }) {
           if (!id) return "N/A";
           if (nameCache[id]) return nameCache[id];
           try {
-            const r = await axios.get(`http://localhost:8000/users/${id}`);
+            const r = await axios.get(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/users/${id}`);
             nameCache[id] = r.data?.name || "N/A";
             return nameCache[id];
           } catch (e) {
@@ -197,7 +197,7 @@ function EmployeeMyLeave({ user, refreshKey }) {
     setLeaves((ls) => ls.filter((x) => x._id !== id));
 
     try {
-      const res = await fetch(`http://localhost:8000/leave/${id}`, {
+      const res = await fetch(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/${id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
@@ -224,8 +224,8 @@ function EmployeeMyLeave({ user, refreshKey }) {
       <div className="card mb-4 mt-3 shadow-sm border-0">
         <div className="card-body">
           <form className="row g-2 align-items-center" onSubmit={e => { e.preventDefault(); applyFilters(); }}>
-            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-              <label htmlFor="statusFilter" className="fw-bold mb-0" style={{ fontSize: "16px", color: "#3A5FBE" }}>Status</label>
+<div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
+              <label htmlFor="statusFilter" className="fw-bold mb-0 text-start text-md-end" style={{ fontSize: "16px", color: "#3A5FBE"}}>Status</label>
               <select
                 id="statusFilter"
                 className="form-select"
@@ -240,48 +240,29 @@ function EmployeeMyLeave({ user, refreshKey }) {
               </select>
             </div>
 
-            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-              <label htmlFor="dateFromFilter" className="fw-bold mb-0" style={{ fontSize: "16px", color: "#3A5FBE", width: "50px" }}>From</label>
+            <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+              <label htmlFor="dateFromFilter" className="fw-bold mb-0 text-start text-md-end" style={{ fontSize: "16px", color: "#3A5FBE", width: "50px" ,minWidth:"50px" ,marginRight: "8px"}}>From</label>
               <input
                 id="dateFromFilter"
                 type="date"
                 className="form-control"
                 value={dateFromFilter}
                 onChange={e => setDateFromFilter(e.target.value)}
-                style={{ minWidth: 140 }}
+                style={{ minWidth: "140px"}}
               />
-            </div>
-
-            <style>
-              {`
-    .form-label-responsive {
-      display: inline-block;
-      width: 50px;
-      min-width: 50px;
-      text-align: left;
-      margin-right: 0;
-    }
-    @media (min-width: 768px) {
-      .form-label-responsive {
-        width: 20px !important;
-        min-width:20px !important;
-        margin-right: 8px !important;
-      }
-    }
-    `}
-            </style>
-
-            <div className="col-12 col-md-auto d-flex align-items-center mb-1">
-              <label htmlFor="dateToFilter" className="form-label-responsive fw-bold mb-0" style={{ fontSize: "16px", color: "#3A5FBE" }}>To</label>
+            </div> 
+            <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+              <label htmlFor="dateToFilter" className="fw-bold mb-0 text-start text-md-end" 
+              style={{width: "50px" , fontSize: "16px", color: "#3A5FBE", minWidth:"50px",marginRight: "8px" }}>To</label>
               <input
                 id="dateToFilter"
                 type="date"
                 className="form-control"
                 value={dateToFilter}
                 onChange={e => setDateToFilter(e.target.value)}
-                style={{ minWidth: 140 }}
+                style={{ minWidth: "140px" }}
               />
-            </div>
+            </div>
 
             <div className="col-auto ms-auto d-flex gap-2">
               <button

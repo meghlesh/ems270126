@@ -77,7 +77,7 @@ function Login() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/login",
+        "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/login",
         { email, password }
       );
 

@@ -11,6 +11,9 @@ const connectDB = require("./db");
 const Attendance = require("./models/AttendanceSchema")
 const path = require("path");
 const fs = require("fs");
+const setPasswordTemplate = require('./template/setPasswordTemplate');
+const rePasswordTemplate=require('./template/resetPasswordTemplate')
+const probationCompletedTemplate=require('./template/probationCompletedTemplate')
 
 // const cloudinary = require("cloudinary").v2;
 // const { CloudinaryStorage } = require("multer-storage-cloudinary");
@@ -37,8 +40,8 @@ cloudinary.config({
 
 
 // const allowedOrigins = [
-//   "https://cws-employee-management-systems.vercel.app",  // production frontend
-//   "https://cws-employee-management-systems.vercel.app"              // local development frontend
+//   "https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net",  // production frontend
+//   "https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net"              // local development frontend
 // ];
 
 // app.use(cors({
@@ -55,7 +58,7 @@ cloudinary.config({
 
 
 const allowedOrigins = [
-  "https://cws-employee-management-systems.vercel.app",
+  "https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net",
   "http://localhost:5173"
 ];
 
@@ -370,16 +373,17 @@ app.post("/admin/add-employee", upload.fields([
       newEmployee.verifyToken = token;
       await newEmployee.save();
 
-      const verifyLink = `https://cws-employee-management-systems.vercel.app/employee/verify/${newEmployee._id}/${encodeURIComponent(token)}`;
+      const verifyLink = `https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net/employee/verify/${newEmployee._id}/${encodeURIComponent(token)}`;
 
 
+     const setPasswordHtml = await setPasswordTemplate(verifyLink);
       // Send email safely
       try {
         await transporter.sendMail({
           from: `"CWS EMS" <${process.env.EMAIL_USER}>`,
           to: email,
           subject: "Verify your email - set your password",
-          text: `Click this link to verify and set your password: ${verifyLink}`,
+          html:setPasswordHtml
         });
 
       } catch (err) {
@@ -464,7 +468,7 @@ async function autoGrantLeaveIfProbationCompleted(user) {
 
   await user.save();
   console.log(`🎉 Auto leave credited for ${user.name}`);
-
+ const probationHtml= await probationCompletedTemplate();
   // -----------------------------------------------------
   // 1️⃣ SEND EMAIL TO EMPLOYEE
   // -----------------------------------------------------
@@ -473,18 +477,20 @@ async function autoGrantLeaveIfProbationCompleted(user) {
       from: `"CWS EMS" <${process.env.EMAIL_USER}>`,
       to: user.email,
       subject: "🎉 Probation Period Completed – Leave Credited",
-      text: `Dear ${user.name},
+       html: probationHtml
+//       text: `Dear ${user.name},
+      
 
-Congratulations! You have successfully completed your probation period.
+// Congratulations! You have successfully completed your probation period.
 
-Your yearly leave balance has now been added:
-• Casual Leave: +15
-• Sick Leave: +6
+// Your yearly leave balance has now been added:
+// • Casual Leave: +15
+// • Sick Leave: +6
 
-You can check your updated leave balance on your dashboard.
+// You can check your updated leave balance on your dashboard.
 
-Best Regards,
-CWS EMS Team`
+// Best Regards,
+// CWS EMS Team`
     });
     console.log("📧 Probation completion email sent!");
   } catch (err) {
@@ -756,14 +762,15 @@ app.post("/sendpasswordlink", async (req, res) => {
     })
     const setusertoken = await User.findByIdAndUpdate({ _id: userfind._id }, { verifytoken: token }, { new: true })
     //console.log("setusertoken",setusertoken)
-
+    const forLink=`https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net/forgotpassword/${userfind._id}/${setusertoken.verifytoken}`
+    const resetPasswordHtml= await rePasswordTemplate(forLink);
 
     if (setusertoken) {
       const mailOptions = {
         from: "komal@creativewebsolution.in",
         to: email,
         subject: "Password Reset Request - Employee Management System",
-        text: `this link valid for 5 min https://cws-employee-management-systems.vercel.app/forgotpassword/${userfind._id}/${setusertoken.verifytoken}`
+       html: resetPasswordHtml
       }
 
       transporter.sendMail(mailOptions, (error, info) => {
@@ -3788,5 +3795,132 @@ app.post("/change-password", authenticate, async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 8000;
+
+
+// app.get("/attendance/manager/:managerId/today", async (req, res) => {
+//   try {
+//     const { managerId } = req.params;
+
+//     // 1) Validate managerId
+//     if (!managerId || !managerId.match(/^[0-9a-fA-F]{24}$/)) {
+//       return res.status(400).json({ message: "Invalid manager ID" });
+//     }
+
+//     // 2) Find all employees who report to this manager
+//     const employees = await User.find(
+//       { reportingManager: managerId },
+//       "_id name email department role employeeId reportingManager"
+//     );
+
+//     if (!employees.length) {
+//       return res.status(200).json({ employees: [] });
+//     }
+
+//     const employeeIds = employees.map((e) => e._id);
+
+//     // 3) Build "today" range
+//     const startOfToday = new Date();
+//     startOfToday.setHours(0, 0, 0, 0);
+
+//     const endOfToday = new Date();
+//     endOfToday.setHours(23, 59, 59, 999);
+
+//     // 4) Fetch today's attendance for those employees
+//     const records = await Attendance.find({
+//       employee: { $in: employeeIds },
+//       date: { $gte: startOfToday, $lte: endOfToday },
+//     })
+//       .populate(
+//         "employee",
+//         "name email department role employeeId reportingManager"
+//       )
+//       .sort({ date: -1 });
+
+//     // 5) Map employeeId -> attendance record
+//     const attendanceMap = new Map();
+//     records.forEach((rec) => {
+//       attendanceMap.set(rec.employee._id.toString(), rec);
+//     });
+
+//     // 6) Build unified employees array including absents
+//     const employeesWithTodayAttendance = employees.map((emp) => {
+//       const rec = attendanceMap.get(emp._id.toString());
+//       return {
+//         _id: emp._id,
+//         name: emp.name,
+//         email: emp.email,
+//         department: emp.department,
+//         role: emp.role,
+//         employeeId: emp.employeeId,
+//         reportingManager: emp.reportingManager,
+//         checkInTime: rec ? rec.checkInTime : null,
+//         checkOutTime: rec ? rec.checkOutTime : null,
+//         date: rec ? rec.date : null,
+//       };
+//     });
+
+//     return res.status(200).json({ employees: employeesWithTodayAttendance });
+//   } catch (err) {
+//     console.error("Error fetching manager today's attendance:", err);
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// });
+
+app.get("/attendance/manager/:managerId/today", async (req, res) => {
+  try {
+    const { managerId } = req.params;
+
+    if (!managerId || !managerId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid manager ID" });
+    }
+
+    const employees = await User.find(
+      { reportingManager: managerId },
+      "_id name email department role employeeId reportingManager",
+    );
+
+    if (!employees.length) {
+      return res.status(200).json({ employees: [] });
+    }
+
+    const employeeIds = employees.map((e) => e._id);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const records = await Attendance.find({
+      employee: { $in: employeeIds },
+      date: today,
+    });
+
+    const attendanceMap = new Map();
+    records.forEach((rec) => {
+      attendanceMap.set(rec.employee.toString(), rec);
+    });
+
+    const employeesWithTodayAttendance = employees.map((emp) => {
+      const rec = attendanceMap.get(emp._id.toString());
+      return {
+        _id: emp._id,
+        name: emp.name,
+        email: emp.email,
+        department: emp.department,
+        role: emp.role,
+        employeeId: emp.employeeId,
+        reportingManager: emp.reportingManager,
+
+        checkInTime: rec ? rec.checkIn : null,
+        checkOutTime: rec ? rec.checkOut : null,
+        date: rec ? rec.date : null,
+      };
+    });
+
+    res.status(200).json({ employees: employeesWithTodayAttendance });
+  } catch (err) {
+    console.error("Error fetching manager today's attendance:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

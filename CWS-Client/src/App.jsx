@@ -20,7 +20,7 @@ function App() {
       // sessionStorage.removeItem("activeUser");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      window.location.href = "/login";
+      window.location.href = "/";
     }
   };
 
@@ -32,7 +32,7 @@ function App() {
     <Router>
       <Routes>
         {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/employee/verify/:id/:token" element={<EmployeeVerify />} />
         <Route path="/forgotpassword/:id/:token" element={<ForgotPassword />} />
         <Route path="/password-reset" element={<PasswordReset />} />

@@ -27,7 +27,7 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await axios.get(" http://localhost:8000/attendance/regularization/all", {
+      const res = await axios.get(" https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/regularization/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -53,7 +53,7 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
     try {
       const token = localStorage.getItem("accessToken");
       await axios.put(
-        ` http://localhost:8000/attendance/regularization/${id}/status`,
+        ` https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/regularization/${id}/status`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -283,8 +283,9 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
                 }}
               >
                 {/* Status Filter */}
-                <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-                  <label htmlFor="statusFilter" className="fw-bold mb-0" style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}>Status</label>
+                <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
+                  <label htmlFor="statusFilter" className="fw-bold mb-0 text-start text-md-end"
+                    style={{ width: "55px", fontSize: "16px", color: "#3A5FBE", marginRight: "5px" }}>Status</label>
                   <select
                     id="statusFilter"
                     className="form-select"
@@ -298,8 +299,9 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
                   </select>
                 </div>
                 {/* Name Filter */}
-                <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-                  <label htmlFor="employeeNameFilter" className="fw-bold mb-0" style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}>Name</label>
+                <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
+                  <label htmlFor="employeeNameFilter" className="fw-bold mb-0 text-start text-md-end"
+                    style={{ width: "50px", fontSize: "16px", color: "#3A5FBE", marginRight: "10px" }}>Name</label>
                   <input
                     id="employeeNameFilter"
                     type="text"
@@ -310,8 +312,9 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
                   />
                 </div>
                 {/* From Date Filter */}
-                <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-                  <label htmlFor="dateFromFilter" className="fw-bold mb-0" style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}>From</label>
+                <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
+                  <label htmlFor="dateFromFilter" className="fw-bold mb-0 text-start text-md-end"
+                    style={{ fontSize: "16px", color: "#3A5FBE", width: "50px", minWidth: "50px", marginRight: "8px" }}>From</label>
                   <input
                     type="date"
                     id="dateFromFilter"
@@ -322,7 +325,7 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
                 </div>
                 {/* To Date Filter */}
                 <>
-                  <style>
+                  {/* <style>
                     {`
     .form-label-responsive {
       display: inline-block;
@@ -339,20 +342,20 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
       }
     }
     `}
-                  </style>
+                  </style> */}
 
-                  <div className="col-12 col-md-auto d-flex align-items-center mb-1">
+                  <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
                     <label
                       htmlFor="dateToFilter"
-                      className="fw-bold mb-0 form-label-responsive"
-                      style={{ fontSize: "16px", color: "#3A5FBE" }}
+                      className="fw-bold mb-0 text-start text-md-end"
+                      style={{ fontSize: "16px", color: "#3A5FBE", width: "50px", minWidth: "50px", marginRight: "8px" }}
                     >
                       To
                     </label>
                     <input
                       type="date"
                       id="dateToFilter"
-                      className="form-control flex-grow-1"
+                      className="form-control "
                       value={dateToFilter}
                       onChange={e => setDateToFilter(e.target.value)}
                     // or: style={{flex: 1}} (if not using Bootstrap utility)
@@ -468,8 +471,8 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
                           <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
                             {rec?.regularizationRequest?.status === "Pending" && (
                               <>
-                                <button className="btn btn-sm btn-outline-success me-2" onClick={() => handleStatusChange(rec._id, "Approved")}>Approve</button>
-                                <button className="btn btn-sm btn-outline-danger" onClick={() => handleStatusChange(rec._id, "Rejected")}>Reject</button>
+                                <button className="btn btn-sm btn-outline-success me-2" onClick={(e) => { e.stopPropagation(); handleStatusChange(rec._id, "Approved"); }}>Approve</button>
+                                <button className="btn btn-sm btn-outline-danger" onClick={(e) => { e.stopPropagation(); handleStatusChange(rec._id, "Rejected"); }}>Reject</button>
                               </>
                             )}
                           </td>
@@ -637,26 +640,26 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
                   <div className="modal-footer border-0 pt-0">
                     {selectedRequest?.regularizationRequest?.status === "Pending" && (
                       <>
-                    <button
-                      className="btn btn-outline-success"
-                      onClick={() => {
-                        handleStatusChange(selectedRequest._id, "Approved");
-                        setSelectedRequest(null);
-                      }}
-                    >
-                      Approve
-                    </button>
+                        <button
+                          className="btn btn-outline-success"
+                          onClick={() => {
+                            handleStatusChange(selectedRequest._id, "Approved");
+                            setSelectedRequest(null);
+                          }}
+                        >
+                          Approve
+                        </button>
 
-                    <button
-                      className="btn btn-outline-danger"
-                      onClick={() => {
-                        handleStatusChange(selectedRequest._id, "Rejected");
-                        setSelectedRequest(null);
-                      }}
-                    >
-                      Reject
-                    </button>
-                    </>
+                        <button
+                          className="btn btn-outline-danger"
+                          onClick={() => {
+                            handleStatusChange(selectedRequest._id, "Rejected");
+                            setSelectedRequest(null);
+                          }}
+                        >
+                          Reject
+                        </button>
+                      </>
                     )}
                     {/* <button
                       className="btn btn-outline-danger"

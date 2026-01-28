@@ -9,7 +9,7 @@ function EmployeeCheckInOut({ employeeId }) {
   useEffect(() => {
     if (!employeeId) return;
     axios
-      .get(` http://localhost:8000/attendance/today/${employeeId}`, {
+      .get(` https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/today/${employeeId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -21,7 +21,7 @@ function EmployeeCheckInOut({ employeeId }) {
 
   const handleCheckIn = async () => {
     const res = await axios.post(
-      ` http://localhost:8000/attendance/checkin/${employeeId}`,
+      ` https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/checkin/${employeeId}`,
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -30,7 +30,7 @@ function EmployeeCheckInOut({ employeeId }) {
 
   const handleCheckOut = async () => {
     const res = await axios.post(
-      ` http://localhost:8000/attendance/checkout/${employeeId}`,
+      ` https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/checkout/${employeeId}`,
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     );

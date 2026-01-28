@@ -36,7 +36,7 @@ function AdminDashboard({ user }) {
             try {
                 const token = localStorage.getItem("accessToken");
                 const authAxios = axios.create({
-                    baseURL: "http://localhost:8000",
+                    baseURL: "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net",
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
@@ -352,10 +352,10 @@ function AdminDashboard({ user }) {
                                 <table className="table table-hover mb-0">
                                     <thead style={{ backgroundColor: "#fff" }}>
                                         <tr >
-                                            <th style={{ fontWeight: '500', fontSize: '14px', width: '130px' }}>Name</th>
-                                            <th style={{ fontWeight: '500', fontSize: '14px' }}>Position</th>
-                                            <th style={{ fontWeight: '500', fontSize: '14px' }}>Department</th>
-                                            <th style={{ fontWeight: '500', fontSize: '14px', width: '130px' }}>DOJ</th>
+                                            <th style={{ fontWeight: '600', fontSize: '14px', width: '130px' }}>Name</th>
+                                            <th style={{ fontWeight: '600', fontSize: '14px' }}>Position</th>
+                                            <th style={{ fontWeight: '600', fontSize: '14px' }}>Department</th>
+                                            <th style={{ fontWeight: '600', fontSize: '14px', width: '130px' }}>DOJ</th>
                                         </tr>
                                     </thead>
                                  
@@ -409,10 +409,10 @@ function AdminDashboard({ user }) {
                                 <table className="table table-hover mb-0">
                                     <thead style={{ backgroundColor: "#fff" }}>
                                         <tr>
-                                            <th style={{ fontWeight: '500', fontSize: '14px' }}>Employee</th>
-                                            <th style={{ fontWeight: '500', fontSize: '14px' }}>Type</th>
-                                            <th style={{ width: "150px", whiteSpace: "nowrap", fontWeight: '500', fontSize: '14px' }}>Date</th>
-                                            <th style={{ fontWeight: '500', fontSize: '14px' }}>Status</th>
+                                            <th style={{ fontWeight: '600', fontSize: '14px' }}>Employee</th>
+                                            <th style={{ fontWeight: '600', fontSize: '14px' }}>Type</th>
+                                            <th style={{ width: "150px", whiteSpace: "nowrap", fontWeight: '600', fontSize: '14px' }}>Date</th>
+                                            <th style={{ fontWeight: '600', fontSize: '14px' }}>Status</th>
                                         </tr>
                                     </thead>
 
@@ -472,7 +472,7 @@ function AdminDashboard({ user }) {
                                                                             : displayStatus === "Rejected"
                                                                                 ? "#f8d7da"
                                                                                 : "#FFE493",
-                                                                    fontWeight: "500"
+                                                                    fontWeight: "600"
                                                                 }}
                                                             >
                                                                 {displayStatus}

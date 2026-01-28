@@ -46,12 +46,12 @@ function ManagerDashboard({ user }) {
     const fetchData = async () => {
       try {
         const leavesRes = await axios.get(
-          `http://localhost:8000/leaves/manager/${user._id}`
+          `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leaves/manager/${user._id}`
         );
         setLeaves(leavesRes.data);
 
         const regRes = await axios.get(
-          `http://localhost:8000/regularization/manager/${user._id}`
+          `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/regularization/manager/${user._id}`
         );
         setRegularizations(regRes.data);
       } catch (err) {
@@ -70,7 +70,7 @@ function ManagerDashboard({ user }) {
   const updateLeaveStatus = async (leaveId, status) => {
     try {
       const res = await axios.put(
-        `http://localhost:8000/leave/${leaveId}/status`,
+        `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/${leaveId}/status`,
         {
           status,
           userId: user._id,
@@ -90,7 +90,7 @@ function ManagerDashboard({ user }) {
   const updateRegularizationStatus = async (attendanceId, status) => {
     try {
       const res = await axios.put(
-        `http://localhost:8000/attendance/regularization/${attendanceId}/status`,
+        `https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/regularization/${attendanceId}/status`,
         {
           status,
           approvedBy: user._id,
@@ -964,17 +964,19 @@ function ManagerDashboard({ user }) {
                           <>
                             <button
                               className="btn btn-sm btn-outline-success me-2"
-                              onClick={() =>
+                              onClick={() => {
+                                e.stopPropagation();
                                 updateRegularizationStatus(r._id, "Approved")
-                              }
+                              }}
                             >
                               Approve
                             </button>
                             <button
                               className="btn btn-sm btn-outline-danger"
-                              onClick={() =>
+                              onClick={() => {
+                                e.stopPropagation();
                                 updateRegularizationStatus(r._id, "Rejected")
-                              }
+                              }}
                             >
                               Reject
                             </button>

@@ -15,7 +15,7 @@ const EventCard = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const authAxios = axios.create({
-          baseURL: "http://localhost:8000",
+          baseURL: "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net",
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -101,7 +101,7 @@ const EventCard = () => {
 
       <div className="card-body text-center" style={{color: "#3A5FBE"}}>
         {currentEvent.type === "Birthday" ? (
-          <i className="bi bi-gift fs-2 text-success"></i>
+          <i className="bi bi-gift fs-2 " style={{color: "#3A5FBE"}}></i>
         ) : (
           <i className="bi bi-building fs-2" style={{color: "#3A5FBE"}}></i>
         )}

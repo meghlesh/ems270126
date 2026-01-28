@@ -49,7 +49,7 @@ function EmployeeDashboard({ user }) {
   const token = localStorage.getItem("accessToken");
 
   const authAxios = axios.create({
-    baseURL: "http://localhost:8000",
+    baseURL: "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net",
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -332,7 +332,7 @@ const handleCheckOut = async () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8000/leave/apply", {
+      await axios.post("https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/apply", {
         employeeId: user._id,
         ...form,
       });
@@ -348,8 +348,8 @@ const handleCheckOut = async () => {
     const fetchData = async () => {
       try {
         const [leaveRes, regRes] = await Promise.all([
-          axios.get(`http://localhost:8000/leave/my/${user._id}`),
-          axios.get(`http://localhost:8000/attendance/regularization/my/${user._id}`),
+          axios.get(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/leave/my/${user._id}`),
+          axios.get(`https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/attendance/regularization/my/${user._id}`),
 
         ]);
 
@@ -521,7 +521,7 @@ const handleCheckOut = async () => {
                   {/* Attendance Locations */}
                   <div className="d-flex align-items-center" style={{ paddingTop: "15px", gap: "20px" }}>
                     <p style={{ marginBottom: 0, display: "flex" }}>
-                      <strong style={{ whiteSpace: "nowrap" }}>{attendance?.mode === "WFH" ? "WFH Location" : "Office Location"}:</strong>{" "}
+                      <strong style={{ whiteSpace: "nowrap" , color: "#3A5FBE" }}>{attendance?.mode === "WFH" ? "WFH Location" : "Office Location"}</strong>{" "}
                       <span style={{ marginLeft: "5px" }}>
                         {attendance?.checkIn
                           ? attendance?.mode === "WFH"

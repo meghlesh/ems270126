@@ -28,7 +28,7 @@ function Sidebar({ handleLogout }) {
       {/* Toggle button for small screens */}
       <button
         className="btn btn-primary d-md-none position-fixed m-2"
-        style={{ zIndex: 1100 ,backgroundColor: '#3A5FBE', borderColor: '#fcfcfcff'}}
+        style={{ zIndex: 1100, backgroundColor: '#3A5FBE', borderColor: '#fcfcfcff' }}
         onClick={() => setIsOpen(!isOpen)}
       >
         ☰
@@ -124,9 +124,9 @@ function Sidebar({ handleLogout }) {
             >
               <TreeFill size={20} />
               {/* geetanjali code */}
-             <h6 className="mt-1">
+              <h6 className="mt-1">
                 {role === "admin" || role === "ceo" ? "Employee Leaves" : "Leaves"}
-              </h6>
+              </h6>
             </NavLink>
           </li>
 
@@ -163,6 +163,20 @@ function Sidebar({ handleLogout }) {
             </NavLink>
           </li>
 
+                {role === "manager" && (
+            <li className="nav-item">
+              <NavLink
+                to={`/dashboard/${role}/${username}/${id}/TeamAttendance`}
+                className="nav-link text-white d-flex flex-column align-items-center"
+                onClick={handleLinkClick}
+                end
+              >
+                <PersonLinesFill size={20} />
+                <h6 className="mt-1">My Team Attendance</h6>
+              </NavLink>
+            </li>
+          )}
+
           {/* Regularization */}
           <li className="nav-item ">
             <NavLink
@@ -177,7 +191,7 @@ function Sidebar({ handleLogout }) {
                 {role === "admin" || role === "ceo"
                   ? "Employee Regularization"
                   : "Regularization"}
-              </h6>
+              </h6>
             </NavLink>
           </li>
 
@@ -192,7 +206,7 @@ function Sidebar({ handleLogout }) {
               <FileEarmarkTextFill size={20} />
               {/* <h6 className="mt-1"> {role === "admin" ? "Add Events" : "Events"}</h6> */}
               {/* <h6 className="mt-1"> {role === "admin" ? "Events/Holidays" : "Events"}</h6> */}
-           <h6 className="mt-1">Events & Holidays</h6>
+              <h6 className="mt-1">Events & Holidays</h6>
             </NavLink>
           </li>
 
@@ -221,7 +235,7 @@ function Sidebar({ handleLogout }) {
           {/* Settings */}
           <li className="nav-item ">
             <NavLink
-to={`/dashboard/${role}/${username}/${id}/settings`}
+              to={`/dashboard/${role}/${username}/${id}/settings`}
               className="nav-link text-white d-flex flex-column align-items-center"
               onClick={handleLinkClick}
               end

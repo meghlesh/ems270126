@@ -18,7 +18,7 @@ function HolidaysCard({ }) {
       try {
         const token = localStorage.getItem("accessToken");
         const authAxios = axios.create({
-          baseURL: "http://localhost:8000",
+          baseURL: "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net",
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -22,11 +22,11 @@ function EmployeeFullAttendance() {
         setLoading(true);
         const token = localStorage.getItem("accessToken");
         const authAxios = axios.create({
-          baseURL: "  http://localhost:8000",
+          baseURL: "  https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net",
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const empRes = await axios.get(` http://localhost:8000/employees/${empId}`);
+        const empRes = await axios.get(` https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net/employees/${empId}`);
         setEmployee(empRes.data);
 
         const attRes = await authAxios.get(`/attendance/all/${empId}`);
@@ -113,7 +113,7 @@ const buildDataWithFullCalendar = () => {
       result.push({
         _id: key,                        // synthetic ID
         date: d.toISOString(),
-        dayStatus: isWeekend ? "Absent" : "Absent",
+        dayStatus: isWeekend ? "Weekly Off" : "Absent",
         mode: null,
         workingHours: null,
         checkIn: null,
@@ -135,6 +135,10 @@ const buildDataWithFullCalendar = () => {
 
     // Map data for Excel
     const excelData = filteredAttendance.map((att) => ({
+    "EMP ID": employee?.employeeId || id || "N/A",
+    "EMP NAME": employee?.name || username || "N/A",
+
+
       Date: new Date(att.date).toLocaleDateString("en-GB"),
       Mode: att.mode,
       "Check In": att.checkIn
@@ -203,6 +207,7 @@ const buildDataWithFullCalendar = () => {
     Present: { background: '#d1f7df' },
     Absent: { background: '#f8d7da' },
     'Half Day': { background: '#fff3cd' },
+    'Weekly Off': { background: '#e2e3e5' },
     Working: { background: '#cff4fc' },
     Leave: { background: '#e7e9ff' },
   };
@@ -234,10 +239,17 @@ const sortedAndFilteredData =buildDataWithFullCalendar()
   return (
     <div className="container p-4">
       {employee && (
-        <div className="mb-3">
+        <div className="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
           <h3 className="mb-3" style={{ color: "#3A5FBE", fontSize: "25px" }}>
             <span style={{ textTransform: "capitalize" }}>{employee.name}</span>'s Attendance
           </h3>
+                    <button
+            className="btn btn-sm custom-outline-btn"
+            style={{ height: "38px",padding: "6px 14px",fontSize: "14px", fontWeight: 600,minWidth: "90px", whiteSpace: "nowrap" }}
+            onClick={handleDownloadExcel}
+          >
+            Download All Attendance Data
+          </button>
         </div>
       )}
 
@@ -362,13 +374,7 @@ const sortedAndFilteredData =buildDataWithFullCalendar()
           >
             Reset
           </button>
-          <button
-            className="btn btn-sm custom-outline-btn"
-            style={{  minWidth: 90 }}
-            onClick={handleDownloadExcel}
-          >
-            Download Excel
-          </button>
+
         </div>
       </div>
 
