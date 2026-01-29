@@ -271,7 +271,7 @@ app.post("/admin/add-employee", upload.fields([
       newEmployee.verifyToken = token;
       await newEmployee.save();
 
-      const verifyLink = `https://app-rect-fe-cpgsaadrg5bsfjab.centralus-01.azurewebsites.net/employee/verify/${newEmployee._id}/${encodeURIComponent(token)}`;
+      const verifyLink = `https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net/employee/verify/${newEmployee._id}/${encodeURIComponent(token)}`;
 
 
       // Send email safely
@@ -604,7 +604,7 @@ app.post("/sendpasswordlink", async (req, res) => {
         from: "komal@creativewebsolution.in",
         to: email,
         subject: "Password Reset Request - Employee Management System",
-        text: `this link valid for 5 min https://app-rect-fe-cpgsaadrg5bsfjab.centralus-01.azurewebsites.net/forgotpassword/${userfind._id}/${setusertoken.verifytoken}`
+        text: `this link valid for 5 min https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net/forgotpassword/${userfind._id}/${setusertoken.verifytoken}`
       }
 
       transporter.sendMail(mailOptions, (error, info) => {
