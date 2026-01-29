@@ -72,7 +72,7 @@ function PasswordReset() {
             
               <button type="submit" className="btn-login mt-3">Get Reset Link</button>
                <div className="forgot-link1">
-                          <Link to="/login" style={{fontWeight:'500'}}>Back To Login</Link>
+                          <Link to="/" style={{fontWeight:'500'}}>Back To Login</Link>
                         </div>
             </div>
           </form>
