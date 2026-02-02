@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -31,11 +29,10 @@ function ManagerAssignedEmployeesAttendance() {
         setLoading(true);
         const token = localStorage.getItem("accessToken");
         const authAxios = axios.create({
-          baseURL: "https://api-emsdev-be-epb9fbg0e7ewese6.southindia-01.azurewebsites.net", // ❌ removed leading space
+          baseURL: "http://localhost:8000",
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // 🔁 CHANGED: call manager-specific today's API
         const res = await authAxios.get(`/attendance/manager/${id}/today`);
 
         // res.data is { employees: [...] }
@@ -107,30 +104,40 @@ function ManagerAssignedEmployeesAttendance() {
     // Status Filter
     if (statusFilter !== "All") {
       temp = temp.filter((emp) => {
-        const workingHours = calculateWorkingHours(
-          emp.checkInTime,
-          emp.checkOutTime
-        );
-        const status = getStatus(
-          emp.checkInTime,
-          emp.checkOutTime,
-          workingHours
-        );
-        return status === statusFilter;
+        const checkIn = emp.checkInTime;
+        const checkOut = emp.checkOutTime;
+        const workingHours = calculateWorkingHours(checkIn, checkOut);
+        const status = getStatus(checkIn, checkOut, workingHours);
+        if (statusFilter === "Late Check-In") {
+          // Late check-in: Present AND after 10:00 am
+          if (checkIn) {
+            const dt = new Date(checkIn);
+            const hours = dt.getHours();
+            const minutes = dt.getMinutes();
+            return (
+              (status === "Present" ||
+                status === "Half Day" ||
+                status === "Working") &&
+              (hours > 10 || (hours === 10 && minutes > 0))
+            );
+          }
+          return false;
+        } else {
+          return status === statusFilter;
+        }
       });
     }
-
-    // Name Filter
+    // Name filter
     if (employeeNameFilter.trim() !== "") {
       temp = temp.filter((emp) =>
         emp.name
           .toLowerCase()
-          .includes(employeeNameFilter.trim().toLowerCase())
+          .includes(employeeNameFilter.trim().toLowerCase()),
       );
     }
 
     setFilteredEmployees(temp);
-    setCurrentPage(1);
+    setCurrentPage(1); // reset to first page
   };
 
   // ✅ Pagination Calculations (THIS FIXES YOUR ERROR)
@@ -141,7 +148,7 @@ function ManagerAssignedEmployeesAttendance() {
   // ✅ THIS WAS MISSING – CAUSING YOUR CRASH
   const currentEmployees = filteredEmployees.slice(
     indexOfFirstItem,
-    indexOfLastItem
+    indexOfLastItem,
   );
 
   // ✅ Page Change Handler
@@ -151,16 +158,27 @@ function ManagerAssignedEmployeesAttendance() {
     }
   };
 
-
   return (
-   <div className="p-2 max-w-6xl mx-auto">
-      <h2 className="text-xl font-bold mb-4" style={{ color: "#3A5FBE", fontSize: "25px" }}>Today's Attendance Details</h2>
+    <div className="container-fluid">
+      <h2
+        style={{
+          color: "#3A5FBE",
+          fontSize: "25px",
+          marginLeft: "15px",
+          marginBottom: "40px",
+        }}
+      >
+        Today's Attendance Details
+      </h2>
 
       {/* Summary Cards */}
       <div className="row  mb-4">
         <div className="col-md-4 mb-3">
           <div className="card shadow-sm h-100 border-0">
-            <div className="card-body d-flex align-items-center" style={{ gap: "20px" }}>
+            <div
+              className="card-body d-flex align-items-center"
+              style={{ gap: "20px" }}
+            >
               <h4
                 className="mb-0"
                 style={{
@@ -178,18 +196,22 @@ function ManagerAssignedEmployeesAttendance() {
                 {summary.present}
               </h4>
 
-              <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
+              <p
+                className="mb-0 fw-semibold"
+                style={{ fontSize: "20px", color: "#3A5FBE" }}
+              >
                 Total Present Employees
               </p>
-
-
             </div>
           </div>
         </div>
 
         <div className="col-md-4 mb-3">
           <div className="card shadow-sm h-100 border-0">
-            <div className="card-body d-flex align-items-center" style={{ gap: "20px" }}>
+            <div
+              className="card-body d-flex align-items-center"
+              style={{ gap: "20px" }}
+            >
               <div
                 className="mb-0"
                 style={{
@@ -207,17 +229,22 @@ function ManagerAssignedEmployeesAttendance() {
                 {summary.absent}
               </div>
 
-              <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
+              <p
+                className="mb-0 fw-semibold"
+                style={{ fontSize: "20px", color: "#3A5FBE" }}
+              >
                 Absent Employees
               </p>
-
             </div>
           </div>
         </div>
 
         <div className="col-md-4 mb-3">
           <div className="card shadow-sm h-100 border-0">
-            <div className="card-body d-flex align-items-center" style={{ gap: "20px" }}>
+            <div
+              className="card-body d-flex align-items-center"
+              style={{ gap: "20px" }}
+            >
               <div
                 className="mb-0"
                 style={{
@@ -235,10 +262,12 @@ function ManagerAssignedEmployeesAttendance() {
                 {summary.lateCheckIn}
               </div>
               <div>
-                <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
+                <p
+                  className="mb-0 fw-semibold"
+                  style={{ fontSize: "20px", color: "#3A5FBE" }}
+                >
                   Late Check-Ins
                 </p>
-
               </div>
             </div>
           </div>
@@ -246,23 +275,29 @@ function ManagerAssignedEmployeesAttendance() {
       </div>
 
       {/* Filters Card */}
-          <div className="card mb-4 shadow-sm border-0">
+      <div className="card mb-4 shadow-sm border-0">
         <div className="card-body">
           <form
             className="row g-2 align-items-center"
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault();
               applyFilters();
             }}
           >
             {/* Status Filter */}
             <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-              <label htmlFor="statusFilter" className="fw-bold mb-0" style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}>Status</label>
+              <label
+                htmlFor="statusFilter"
+                className="fw-bold mb-0"
+                style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}
+              >
+                Status
+              </label>
               <select
                 id="statusFilter"
                 className="form-select"
                 value={statusFilter}
-                onChange={e => setStatusFilter(e.target.value)} // no auto-filter on change
+                onChange={(e) => setStatusFilter(e.target.value)} // no auto-filter on change
               >
                 <option value="All">All</option>
                 <option value="Present">Present</option>
@@ -271,40 +306,46 @@ function ManagerAssignedEmployeesAttendance() {
                 <option value="Absent">Absent</option>
                 <option value="Late Check-In">Late Check-In</option>
               </select>
-
             </div>
             {/* Name Filter */}
             <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
-              <label htmlFor="employeeNameFilter" className="fw-bold mb-0" style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}>Name</label>
+              <label
+                htmlFor="employeeNameFilter"
+                className="fw-bold mb-0"
+                style={{ width: "50px", fontSize: "16px", color: "#3A5FBE" }}
+              >
+                Name
+              </label>
               <input
                 id="employeeNameFilter"
                 type="text"
                 className="form-control"
                 value={employeeNameFilter}
-                onChange={e => setEmployeeNameFilter(e.target.value)}
+                onChange={(e) => setEmployeeNameFilter(e.target.value)}
                 placeholder="Employee name"
               />
             </div>
-            <>
-            </>
+            <></>
 
             {/* Filter and Reset Buttons */}
             <div className="col-12 col-md-auto ms-md-auto d-flex gap-2 mb-1 justify-content-end">
-              <button type="submit" 
-              className="btn btn-sm custom-outline-btn"
-            style={{  minWidth: 90 }}
-              >Filter</button>
+              <button
+                type="submit"
+                className="btn btn-sm custom-outline-btn"
+                style={{ minWidth: 90 }}
+              >
+                Filter
+              </button>
               <button
                 type="button"
-               className="btn btn-sm custom-outline-btn"
-            style={{  minWidth: 90 }}
+                className="btn btn-sm custom-outline-btn"
+                style={{ minWidth: 90 }}
                 onClick={() => {
                   setStatusFilter("All");
                   setEmployeeNameFilter("");
                   setCurrentPage(1);
                   setFilteredEmployees(attendanceData.employees || []);
                 }}
-
               >
                 Reset
               </button>
@@ -313,77 +354,209 @@ function ManagerAssignedEmployeesAttendance() {
         </div>
       </div>
 
-
       {/* Attendance Table */}
- <div className="table-responsive">
+      <div className="table-responsive">
         <table className="table table-hover mb-0 bg-white">
           <thead style={{ backgroundColor: "#ffffffff" }}>
             <tr>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>Name</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }} >Check-In Time</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }} >Check-Out Time</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }} >Total Hours</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }} >Status</th>
-              <th style={{ fontWeight: '500', fontSize: '14px', color: '#6c757d', borderBottom: '2px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }} >Actions</th>
+              <th
+                style={{
+                  fontWeight: "500",
+                  fontSize: "14px",
+                  color: "#6c757d",
+                  borderBottom: "2px solid #dee2e6",
+                  padding: "12px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Name
+              </th>
+              <th
+                style={{
+                  fontWeight: "500",
+                  fontSize: "14px",
+                  color: "#6c757d",
+                  borderBottom: "2px solid #dee2e6",
+                  padding: "12px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Check-In Time
+              </th>
+              <th
+                style={{
+                  fontWeight: "500",
+                  fontSize: "14px",
+                  color: "#6c757d",
+                  borderBottom: "2px solid #dee2e6",
+                  padding: "12px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Check-Out Time
+              </th>
+              <th
+                style={{
+                  fontWeight: "500",
+                  fontSize: "14px",
+                  color: "#6c757d",
+                  borderBottom: "2px solid #dee2e6",
+                  padding: "12px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Total Hours
+              </th>
+              <th
+                style={{
+                  fontWeight: "500",
+                  fontSize: "14px",
+                  color: "#6c757d",
+                  borderBottom: "2px solid #dee2e6",
+                  padding: "12px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Status
+              </th>
+              <th
+                style={{
+                  fontWeight: "500",
+                  fontSize: "14px",
+                  color: "#6c757d",
+                  borderBottom: "2px solid #dee2e6",
+                  padding: "12px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
-            {currentEmployees.length === 0 ? ( /* NEW: Show message when no results */
+            {currentEmployees.length ===
+            0 /* NEW: Show message when no results */ ? (
               <tr>
-                <td colSpan="6" className="text-center py-4" style={{ color: "#6c757d" }}>
+                <td
+                  colSpan="6"
+                  className="text-center py-4"
+                  style={{ color: "#6c757d" }}
+                >
                   No employees found with status "{statusFilter}"
                 </td>
               </tr>
             ) : (
               currentEmployees.map((emp) => {
+                console.log(emp.name, emp.checkInTime);
                 const checkIn = emp.checkInTime;
                 const checkOut = emp.checkOutTime;
                 const workingHours = calculateWorkingHours(checkIn, checkOut);
                 const status = getStatus(checkIn, checkOut, workingHours);
                 const badgeStyle = {
                   base: {
-                    display: 'inline-block',
-                    padding: '6px 12px',
+                    display: "inline-block",
+                    padding: "6px 12px",
                     fontWeight: 400,
-                    fontSize: '14px',
+                    fontSize: "14px",
                     width: 112,
                     textAlign: "center",
                   },
-                  Present: { background: '#d1f7df' }, // soft green
-                  'Half Day': { background: '#fff3cd' }, // soft yellow
-                  Working: { background: '#cff4fc' }, // soft cyan
-                  Absent: { background: '#f8d7da' }, // soft red
+                  Present: { background: "#d1f7df" }, // soft green
+                  "Half Day": { background: "#fff3cd" }, // soft yellow
+                  Working: { background: "#cff4fc" }, // soft cyan
+                  Absent: { background: "#f8d7da" }, // soft red
                 };
 
                 return (
                   <tr key={emp._id}>
-                    <td style={{ padding: "12px", fontSize: '14px', fontWeight: 400, color: '#212529', whiteSpace: 'nowrap', textTransform: 'capitalize', borderTop: '1px solid #e9ecef' }}>{emp.name}</td>
-                    <td style={{ padding: '12px', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
+                    <td
+                      style={{
+                        padding: "12px",
+                        fontSize: "14px",
+                        fontWeight: 400,
+                        color: "#212529",
+                        whiteSpace: "nowrap",
+                        textTransform: "capitalize",
+                        borderTop: "1px solid #e9ecef",
+                      }}
+                    >
+                      {emp.name}
+                    </td>
+                    <td
+                      style={{
+                        padding: "12px",
+                        fontSize: "14px",
+                        borderBottom: "1px solid #dee2e6",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
                       {checkIn
-                        ? new Date(checkIn).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                        ? new Date(checkIn).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
                         : "-"}
                     </td>
-                    <td style={{ padding: '12px', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
+                    <td
+                      style={{
+                        padding: "12px",
+                        fontSize: "14px",
+                        borderBottom: "1px solid #dee2e6",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
                       {checkOut
-                        ? new Date(checkOut).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                        ? new Date(checkOut).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
                         : "-"}
                     </td>
-                    <td style={{ padding: '12px', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>{workingHours > 0 ? `${workingHours} hrs` : "-"}</td>
-                    <td style={{ padding: '12px', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
+                    <td
+                      style={{
+                        padding: "12px",
+                        fontSize: "14px",
+                        borderBottom: "1px solid #dee2e6",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {workingHours > 0 ? `${workingHours} hrs` : "-"}
+                    </td>
+                    <td
+                      style={{
+                        padding: "12px",
+                        fontSize: "14px",
+                        borderBottom: "1px solid #dee2e6",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
                       <span
-                        style={{ ...badgeStyle.base, ...(badgeStyle[status] || {}) }}
+                        style={{
+                          ...badgeStyle.base,
+                          ...(badgeStyle[status] || {}),
+                        }}
                       >
                         {status}
                       </span>
                     </td>
-                    <td style={{ padding: '12px', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>
+                    <td
+                      style={{
+                        padding: "12px",
+                        fontSize: "14px",
+                        borderBottom: "1px solid #dee2e6",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
                       <button
                         className="btn btn-sm custom-outline-btn"
-            style={{  minWidth: 90 }}
+                        style={{ minWidth: 90 }}
                         onClick={() =>
-                          navigate(`/dashboard/${role}/${username}/${id}/employeeattendance/${emp._id}`, {
-                            state: { employee: emp },
-                          })
+                          navigate(
+                            `/dashboard/${role}/${username}/${id}/employeeattendance/${emp._id}`,
+                            {
+                              state: { employee: emp },
+                            },
+                          )
                         }
                       >
                         View Attendance
@@ -391,17 +564,19 @@ function ManagerAssignedEmployeesAttendance() {
                     </td>
                   </tr>
                 );
-              }))}
+              })
+            )}
           </tbody>
         </table>
       </div>
 
-
-       {/* ✅ Pagination */}
+      {/* ✅ Pagination */}
       <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center">
-            <span style={{ fontSize: "14px", marginRight: "8px" }}>Rows per page:</span>
+            <span style={{ fontSize: "14px", marginRight: "8px" }}>
+              Rows per page:
+            </span>
             <select
               className="form-select form-select-sm"
               style={{ width: "auto", fontSize: "14px" }}
@@ -418,10 +593,15 @@ function ManagerAssignedEmployeesAttendance() {
           </div>
 
           <span style={{ fontSize: "14px", marginLeft: "16px" }}>
-            {filteredEmployees.length > 0 ? indexOfFirstItem + 1 : 0}-{Math.min(indexOfLastItem, filteredEmployees.length)} of {filteredEmployees.length} {/* New change */}
+            {filteredEmployees.length > 0 ? indexOfFirstItem + 1 : 0}-
+            {Math.min(indexOfLastItem, filteredEmployees.length)} of{" "}
+            {filteredEmployees.length} {/* New change */}
           </span>
 
-          <div className="d-flex align-items-center" style={{ marginLeft: "16px" }}>
+          <div
+            className="d-flex align-items-center"
+            style={{ marginLeft: "16px" }}
+          >
             <button
               className="btn btn-sm border-0"
               onClick={() => handlePageChange(currentPage - 1)}
@@ -442,18 +622,14 @@ function ManagerAssignedEmployeesAttendance() {
       <div className="text-end mt-3">
         <button
           className="btn btn-sm custom-outline-btn"
-            style={{  minWidth: 90 }}
+          style={{ minWidth: 90 }}
           onClick={() => window.history.go(-1)}
         >
           Back
         </button>
       </div>
     </div>
-   
   );
-
-
 }
-
 
 export default ManagerAssignedEmployeesAttendance;
