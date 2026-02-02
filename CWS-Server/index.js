@@ -3440,6 +3440,61 @@ app.get("/attendance/all/:employeeId", async (req, res) => {
   }
 });
 
+app.get("/attendance/manager/:managerId/today", async (req, res) => {
+  try {
+    const { managerId } = req.params;
+
+    if (!managerId || !managerId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid manager ID" });
+    }
+
+    const employees = await User.find(
+      { reportingManager: managerId },
+      "_id name email department role employeeId reportingManager",
+    );
+
+    if (!employees.length) {
+      return res.status(200).json({ employees: [] });
+    }
+
+    const employeeIds = employees.map((e) => e._id);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const records = await Attendance.find({
+      employee: { $in: employeeIds },
+      date: today,
+    });
+
+    const attendanceMap = new Map();
+    records.forEach((rec) => {
+      attendanceMap.set(rec.employee.toString(), rec);
+    });
+
+    const employeesWithTodayAttendance = employees.map((emp) => {
+      const rec = attendanceMap.get(emp._id.toString());
+      return {
+        _id: emp._id,
+        name: emp.name,
+        email: emp.email,
+        department: emp.department,
+        role: emp.role,
+        employeeId: emp.employeeId,
+        reportingManager: emp.reportingManager,
+
+        checkInTime: rec ? rec.checkIn : null,
+        checkOutTime: rec ? rec.checkOut : null,
+        date: rec ? rec.date : null,
+      };
+    });
+
+    res.status(200).json({ employees: employeesWithTodayAttendance });
+  } catch (err) {
+    console.error("Error fetching manager today's attendance:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 
 const PORT = process.env.PORT || 3000;
