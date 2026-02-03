@@ -33,6 +33,7 @@ cloudinary.config({
 
 
 const allowedOrigins = [
+  "https://www.creativewebsolution.info",
   "https://app-emsdev-fe-btcaabghdmdae0c9.southindia-01.azurewebsites.net",  // production frontend
   "http://localhost:5173"              // local development frontend
 ];
