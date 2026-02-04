@@ -50,6 +50,17 @@ app.use(cors({
   credentials: true, // if sending cookies
 }));
 
+// ADD THIS BLOCK HERE for the 304 cache clearing
+app.use((req, res, next) => {
+  res.set({
+    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+    "Pragma": "no-cache",
+    "Expires": "0",
+    "Surrogate-Control": "no-store"
+  });
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
