@@ -228,6 +228,9 @@ function Login() {
             <button type="submit" className="btn-login">
               Sign In
             </button>
+
+            <p className="text-center text-muted mt-2" style={{ fontSize: "14px" }}>
+Don't have account? Please reach out to the admin for access.</p>
           </form>
         </div>
       </div>
