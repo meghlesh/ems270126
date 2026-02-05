@@ -11,6 +11,7 @@ const connectDB = require("./db");
 const Attendance = require("./models/AttendanceSchema")
 const path = require("path");
 
+require("./appinsights");
 
 // const cloudinary = require("cloudinary").v2;
 // const { CloudinaryStorage } = require("multer-storage-cloudinary");
