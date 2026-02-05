@@ -11,6 +11,22 @@ const connectDB = require("./db");
 const Attendance = require("./models/AttendanceSchema")
 const path = require("path");
 
+const appInsights = require("applicationinsights");
+
+appInsights
+  .setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+  .setAutoCollectRequests(true)
+  .setAutoCollectPerformance(true)
+  .setAutoCollectExceptions(true)
+  .setAutoCollectDependencies(true)
+  .setAutoCollectConsole(true, true)
+  .setUseDiskRetryCaching(true)
+  .start();
+
+console.log("Application Insights initialized with Instrumentation Key");
+
+
+
 
 // const cloudinary = require("cloudinary").v2;
 // const { CloudinaryStorage } = require("multer-storage-cloudinary");
