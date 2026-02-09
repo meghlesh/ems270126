@@ -1,14 +1,18 @@
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
-import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
 
-export const reactPlugin = new ReactPlugin();
-
-export const appInsights = new ApplicationInsights({
+const appInsights = new ApplicationInsights({
   config: {
-    connectionString: import.meta.env.VITE_APPINSIGHTS_CONNECTION_STRING,
-    extensions: [reactPlugin],
-    enableAutoRouteTracking: true,
-  },
+    connectionString:
+      "InstrumentationKey=549ddc10-4942-43aa-bfaa-244ae9fba8e2",
+    enableAutoRouteTracking: true
+  }
 });
 
-appInsights.loadAppInsights();
+try {
+  appInsights.loadAppInsights();
+} catch (e) {
+  console.warn("Application Insights failed to load", e);
+}
+
+export { appInsights };
+
